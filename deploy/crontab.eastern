@@ -1,0 +1,26 @@
+# AutoTrader crontab — agentws001 (server timezone MUST be America/New_York).
+# Install ONLY at cutover (after disabling the Mac's scheduled tasks!):  crontab deploy/crontab.eastern
+# Each trading job runs Claude Code headless with the exported task prompt.
+# claude must be logged in; permissions come from ~/.claude/settings.json (bypass + deny rules).
+SHELL=/bin/bash
+PATH=/usr/local/bin:/usr/bin:/bin:$HOME/.local/bin
+REPO=/home/jploude/projects/AutoTrader
+CLAUDE=claude
+
+# Genesis+Exodus full scan — hourly :45, 9:45a–3:45p ET, Mon–Fri
+45 9-15 * * 1-5   $CLAUDE -p "$(cat $REPO/deploy/tasks/genesis-schwab-scan.md)"        >> $HOME/autotrader-logs/scan.log 2>&1
+
+# Genesis+Exodus quick-check — :00/:15/:30, 9:30a–3:30p ET, Mon–Fri
+0,15,30 9-15 * * 1-5  $CLAUDE -p "$(cat $REPO/deploy/tasks/genesis-schwab-quick-check.md)" >> $HOME/autotrader-logs/quick.log 2>&1
+
+# Ark monthly rebalance — 10:00 ET days 1–4 (first-trading-day gate inside the prompt)
+0 10 1-4 * *      $CLAUDE -p "$(cat $REPO/deploy/tasks/ark-monthly-rebalance.md)"      >> $HOME/autotrader-logs/ark.log 2>&1
+
+# Ark weekly trend check — Fridays 10:05 ET
+5 10 * * 5        $CLAUDE -p "$(cat $REPO/deploy/tasks/ark-weekly-check.md)"           >> $HOME/autotrader-logs/ark.log 2>&1
+
+# Schwab token watchdog — daily 7:00 ET
+0 7 * * *         $CLAUDE -p "$(cat $REPO/deploy/tasks/schwab-token-watchdog.md)"      >> $HOME/autotrader-logs/watchdog.log 2>&1
+
+# Weekly scorecard — Mondays 5:30 ET
+30 5 * * 1        $CLAUDE -p "$(cat $REPO/deploy/tasks/genesis-weekly-scorecard.md)"   >> $HOME/autotrader-logs/scorecard.log 2>&1

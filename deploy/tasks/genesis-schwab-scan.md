@@ -1,0 +1,27 @@
+---
+name: genesis-schwab-scan
+description: Genesis+Exodus SCHWAB full scan — hourly :45, 9:45a–3:45p ET (machine local = Eastern), Mon–Fri. LIVE/full-auto, gated by ops.py preflight + Schwab token.
+---
+
+Scheduled market-hours run of the "Project Genesis + Exodus — Charles Schwab edition" capital-rotation scanner. Fires hourly at :45, 9:45a–3:45p EASTERN (the machine's local timezone is Eastern), Mon–Fri. Re-check the actual ET clock; place new buys only inside the ET 9:45a–3:45p window.
+
+MODE — LIVE / full-auto. You MAY place real buy + profit-recovery sell orders autonomously, but ONLY when every gate and circuit breaker passes. Default to NO TRADE. Protect capital first. The durable kill-switch in ~/.claude/skills/genesis-exodus-schwab/state/control.json overrides everything.
+
+HUMAN-ONLY COMMANDS — ABSOLUTE RULE: NEVER run `ops.py ack-losses` or `ops.py resume` under ANY circumstances (they clear safety halts and belong to the human alone; they are also deny-blocked at the harness level). If preflight or any circuit breaker blocks buys, HONOR THE BLOCK: report it plainly and continue monitoring. A blocked state is a correct output, not a problem to fix.
+
+LOAD AND FOLLOW THE SKILL: Read ~/.claude/skills/genesis-exodus-schwab/SKILL.md AND references/playbooks.md + references/output-format.md + references/execution.md, then execute the full scan exactly. SKILL.md §0 is authoritative. SKILL.md §7's REWARD TEST is authoritative for reward/risk assessment: a profile-conform entry (10% stop, +10% first target selling 40%, 25%-trailing uncapped runner) SATISFIES the reward test by default; reject on reward grounds ONLY for structurally capped upside or when no sane stop exists. Do NOT apply the old "first-target/stop >= 2:1" arithmetic (retired 2026-07-08).
+
+BROKER: Charles Schwab Trader API via `python3 ~/.claude/skills/genesis-exodus-schwab/scripts/schwab.py` (account/quotes/orders/execution). DATA: FMP via `python3 ~/.claude/skills/genesis-exodus-schwab/scripts/fmp.py`. Never print keys/secrets/tokens.
+
+MANDATORY FIRST GATES:
+- `schwab.py token-status`: if reauth_required or not authenticated -> output "SCHWAB RE-AUTH NEEDED — run: python3 ~/.claude/skills/genesis-exodus-schwab/scripts/schwab.py reauth", do NOTHING else, stop.
+- `schwab.py accounts`: account access check on the whitelisted account (#41343393). Any error -> ACCOUNT ACCESS ERROR, stop.
+- Seed baseline `ops.py nav-set <liquidationValue>` then `ops.py preflight --nav <liquidationValue>`. If new_buys_allowed=false -> monitoring + risk-reducing sells only, NO new buys, and NEVER attempt to clear the block yourself.
+
+HARD GATES before ANY real order: account OK; ET hours (new buys 9:45a–3:45p only, never at/after 4pm); CONFIRMED cash only (cashAvailableForTrading); NO-DEPLOYABLE-CAPITAL FAST-PATH (skip discovery if cash can't fit 2 whole shares of a qualifying name, buy cap reached, or new_buys_allowed=false); candidate scored >=7/10, REWARD TEST per SKILL §7, market filter passes, stop defined, price <=8% above ideal entry, not a duplicate, within caps (SIZING POLICY C: lesser of $100 and 33% of equity per name, <=3/sector, <=3 buys/day, 3–10 positions, whole-shares-only >=2 shares); `schwab.py preview-order` clean before placing.
+
+CIRCUIT BREAKERS (override AUTO_BUY): daily-loss halt (>=5% vs session-open NAV); earnings guard (within ~5 trading days -> WATCHLIST); consecutive-loss halt (2 of last 3 closed at a stop -> pause; USER-ack only); data/fragility halt (missing/contradictory data or price moved >3% -> NO TRADE).
+
+PROCEDURE: (1) token-status; (2) accounts/positions/orders; (3) nav-set + preflight; (4) fmp.py regime; (5) update each position, check profit targets + fills — place a profit-recovery sell when a target is genuinely hit and no duplicate exists; fmp.py earnings-multi <holdings> + fmp.py rotation <holdings>; (6) only if confirmed cash AND ET hours AND new_buys_allowed: discover via `fmp.py screener "priceMoreThan=5" "priceLowerThan=<cap/2>" "limit=150"` + fmp.py movers losers (Exodus), score top ~8–12 with fmp.py indicators + earnings guard + advisory sensors; apply HARD SCOPE judgment (DQ biotech binaries, low-float pumps, leveraged ETFs, sub-$5); pick the single best >=7/10; (7) preview-order then place ONLY if every gate+breaker passes (schwab.py place-order); record with ops.py buy-record; immediately rest the protective GTC STOP 10% below fill; (8) full SCAN REPORT + BEGINNER SUMMARY; (9) JOURNAL — append exactly ONE JSON line to /Users/jp/.claude/skills/genesis-exodus-schwab/state/journal.jsonl (ABSOLUTE path) with "ts" = ISO-8601 WITH local offset (`date '+%Y-%m-%dT%H:%M:%S%z'`), run_type "scan", scan_id, nav (NUMBER), cash, regime, positions, decision, reason. LEDGER: on a fully-closed position run ops.py ledger-add ONCE — first check `tail -5 .../state/ledger.jsonl`; if already recorded, do NOT add again; respect a skipped_duplicate response; (10) short plain-language summary of any order/risk event in the report; (11) LAST: regenerate dashboard data — `python3 ~/.claude/skills/genesis-exodus-schwab/scripts/candidates.py` then `python3 ~/.claude/skills/genesis-exodus-schwab/scripts/report.py`.
+
+If the harness blocks an autonomous order or command, do NOT loop-retry and do NOT find another way — the block is intentional; record it, alert, keep monitoring. Patience beats overtrading.

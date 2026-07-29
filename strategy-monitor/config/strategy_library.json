@@ -1,0 +1,1759 @@
+{
+ "source": {
+  "title": "151 Trading Strategies",
+  "authors": "Zura Kakushadze & Juan Andres Serur",
+  "ssrn": "https://ssrn.com/abstract=3247865",
+  "local_pdf": "/paper.pdf"
+ },
+ "regime_note": "Scored for the market as of 2026-07-17: cautious risk-on \u2014 US equities grinding higher near highs with mixed breadth, VIX ~16-17 (calm, modest vol premium), G+E regime reads 'cautious'. Ordering is model judgment for this environment, not investment advice.",
+ "count": 174,
+ "strategies": [
+  {
+   "section": "4.6",
+   "name": "Multi-asset trend following",
+   "category": "ETFs",
+   "page": 65,
+   "pdf_page": 66,
+   "score": 84,
+   "rationale": "Diversified trend across asset classes \u2014 the all-weather workhorse; strong fit",
+   "rank": 1
+  },
+  {
+   "section": "3.6",
+   "name": "Multifactor portfolio",
+   "category": "Stocks",
+   "page": 43,
+   "pdf_page": 44,
+   "score": 82,
+   "rationale": "Blending momentum/value/quality is robust when no single style dominates \u2014 fits mixed breadth",
+   "rank": 2
+  },
+  {
+   "section": "4.1.2",
+   "name": "Dual-momentum sector rotation",
+   "category": "ETFs",
+   "page": 62,
+   "pdf_page": 63,
+   "score": 82,
+   "rationale": "Relative + absolute momentum with a cash fallback \u2014 built for cautious uptrends",
+   "ge": "Regime gate \u2014 absolute momentum with cash fallback",
+   "rank": 3
+  },
+  {
+   "section": "3.4",
+   "name": "Low-volatility anomaly",
+   "category": "Stocks",
+   "page": 42,
+   "pdf_page": 43,
+   "score": 80,
+   "rationale": "Defensive tilt historically shines in cautious, late-stage tape",
+   "rank": 4
+  },
+  {
+   "section": "10.4",
+   "name": "Trend following (momentum) \u2014 futures",
+   "category": "Futures",
+   "page": 96,
+   "pdf_page": 97,
+   "score": 80,
+   "rationale": "Managed-futures trend is the classic crisis-alpha diversifier; earns its slot in any regime",
+   "rank": 5
+  },
+  {
+   "section": "3.7",
+   "name": "Residual momentum",
+   "category": "Stocks",
+   "page": 44,
+   "pdf_page": 45,
+   "score": 79,
+   "rationale": "Idiosyncratic momentum with market beta stripped \u2014 less exposed to index chop",
+   "rank": 6
+  },
+  {
+   "section": "2.2",
+   "name": "Covered call",
+   "category": "Options",
+   "page": 18,
+   "pdf_page": 19,
+   "score": 79,
+   "rationale": "Income on longs in a slow grind higher \u2014 fits this tape and a long-only book",
+   "rank": 7
+  },
+  {
+   "section": "3.1",
+   "name": "Price-momentum",
+   "category": "Stocks",
+   "page": 40,
+   "pdf_page": 41,
+   "score": 78,
+   "rationale": "Uptrend intact so momentum carries, but crowding risk in a narrow tape",
+   "ge": "Genesis engine \u2014 own-the-leaders RS momentum",
+   "rank": 8
+  },
+  {
+   "section": "4.1.1",
+   "name": "Sector momentum rotation \u2014 MA filter",
+   "category": "ETFs",
+   "page": 62,
+   "pdf_page": 63,
+   "score": 78,
+   "rationale": "Trend filter trims drawdown when rotation stalls",
+   "rank": 9
+  },
+  {
+   "section": "3.18",
+   "name": "Statistical arbitrage \u2014 optimization",
+   "category": "Stocks",
+   "page": 55,
+   "pdf_page": 56,
+   "score": 77,
+   "rationale": "Market-neutral spread harvesting suits a cautious regime; needs execution discipline",
+   "rank": 10
+  },
+  {
+   "section": "4.1",
+   "name": "Sector momentum rotation",
+   "category": "ETFs",
+   "page": 61,
+   "pdf_page": 62,
+   "score": 77,
+   "rationale": "Sector leadership persists; watch concentration in a narrow market",
+   "rank": 11
+  },
+  {
+   "section": "3.2",
+   "name": "Earnings-momentum",
+   "category": "Stocks",
+   "page": 41,
+   "pdf_page": 42,
+   "score": 76,
+   "rationale": "PEAD persists; earnings season dispersion gives it fresh fuel",
+   "rank": 12
+  },
+  {
+   "section": "3.20",
+   "name": "Alpha combos",
+   "category": "Stocks",
+   "page": 59,
+   "pdf_page": 60,
+   "score": 75,
+   "rationale": "Combining decorrelated alphas smooths regime sensitivity",
+   "rank": 13
+  },
+  {
+   "section": "3.8",
+   "name": "Pairs trading",
+   "category": "Stocks",
+   "page": 45,
+   "pdf_page": 46,
+   "score": 74,
+   "rationale": "Choppy, rotation-heavy markets feed spread convergence",
+   "rank": 14
+  },
+  {
+   "section": "6.5",
+   "name": "Index volatility targeting with risk-free asset",
+   "category": "Indexes",
+   "page": 80,
+   "pdf_page": 81,
+   "score": 74,
+   "rationale": "Vol-scaled index exposure \u2014 systematic de-risking suits a cautious regime",
+   "rank": 15
+  },
+  {
+   "section": "3.9.1",
+   "name": "Mean-reversion \u2014 multiple clusters",
+   "category": "Stocks",
+   "page": 47,
+   "pdf_page": 48,
+   "score": 73,
+   "rationale": "Cluster-neutral reversion is steadier than single-cluster in rotation",
+   "rank": 16
+  },
+  {
+   "section": "3.9",
+   "name": "Mean-reversion \u2014 single cluster",
+   "category": "Stocks",
+   "page": 46,
+   "pdf_page": 47,
+   "score": 72,
+   "rationale": "Short-horizon reversion does well when the index grinds instead of trends",
+   "ge": "Exodus cousin \u2014 quality-pullback mean-reversion",
+   "rank": 17
+  },
+  {
+   "section": "2.53",
+   "name": "Collar",
+   "category": "Options",
+   "page": 37,
+   "pdf_page": 38,
+   "score": 72,
+   "rationale": "Cheap downside protection while staying long \u2014 tailor-made for a cautious regime",
+   "rank": 18
+  },
+  {
+   "section": "3.10",
+   "name": "Mean-reversion \u2014 weighted regression",
+   "category": "Stocks",
+   "page": 49,
+   "pdf_page": 50,
+   "score": 71,
+   "rationale": "Regression-weighted variant; same edge, more estimation risk",
+   "rank": 19
+  },
+  {
+   "section": "4.4",
+   "name": "ETF mean-reversion",
+   "category": "ETFs",
+   "page": 64,
+   "pdf_page": 65,
+   "score": 70,
+   "rationale": "Index-level reversion decent in a grind; thinner edge than single-stock",
+   "rank": 20
+  },
+  {
+   "section": "7.4.1",
+   "name": "Volatility risk premium \u2014 Gamma hedging",
+   "category": "Volatility",
+   "page": 83,
+   "pdf_page": 84,
+   "score": 69,
+   "rationale": "Hedged VRP harvest \u2014 the cleaner way to be short vol at VIX ~17",
+   "rank": 21
+  },
+  {
+   "section": "3.16",
+   "name": "Event-driven \u2014 M&A (merger arbitrage)",
+   "category": "Stocks",
+   "page": 52,
+   "pdf_page": 53,
+   "score": 68,
+   "rationale": "Deal spreads are steady carry; depends on deal flow staying healthy",
+   "rank": 22
+  },
+  {
+   "section": "2.7",
+   "name": "Bull put spread",
+   "category": "Options",
+   "page": 20,
+   "pdf_page": 21,
+   "score": 68,
+   "rationale": "Defined-risk premium selling with an upward drift at your back",
+   "rank": 23
+  },
+  {
+   "section": "7.2",
+   "name": "VIX futures basis trading",
+   "category": "Volatility",
+   "page": 81,
+   "pdf_page": 82,
+   "score": 68,
+   "rationale": "Contango roll-down pays in calm regimes; size for the spike",
+   "rank": 24
+  },
+  {
+   "section": "7.4",
+   "name": "Volatility risk premium",
+   "category": "Volatility",
+   "page": 83,
+   "pdf_page": 84,
+   "score": 67,
+   "rationale": "Implied>realized premium is on; tail discipline mandatory",
+   "rank": 25
+  },
+  {
+   "section": "7.3.1",
+   "name": "Hedging short VXX with VIX futures",
+   "category": "Volatility",
+   "page": 82,
+   "pdf_page": 83,
+   "score": 66,
+   "rationale": "Hedged short-vol carry; basis still positive",
+   "rank": 26
+  },
+  {
+   "section": "5.12",
+   "name": "Rolling down the yield curve",
+   "category": "Fixed Income",
+   "page": 74,
+   "pdf_page": 75,
+   "score": 66,
+   "rationale": "Positive-slope rolldown carry is back on the table",
+   "rank": 27
+  },
+  {
+   "section": "19.2",
+   "name": "Fundamental macro momentum",
+   "category": "Global Macro",
+   "page": 122,
+   "pdf_page": 123,
+   "score": 66,
+   "rationale": "Macro-trend tilts across assets; robust discipline",
+   "rank": 28
+  },
+  {
+   "section": "2.50",
+   "name": "Long iron condor",
+   "category": "Options",
+   "page": 36,
+   "pdf_page": 37,
+   "score": 65,
+   "rationale": "Defined-risk range income; VIX ~17 still pays acceptable credit",
+   "rank": 29
+  },
+  {
+   "section": "3.19",
+   "name": "Market-making",
+   "category": "Stocks",
+   "page": 58,
+   "pdf_page": 59,
+   "score": 64,
+   "rationale": "Regime-agnostic edge but infrastructure- and speed-intensive",
+   "rank": 30
+  },
+  {
+   "section": "2.6",
+   "name": "Bull call spread",
+   "category": "Options",
+   "page": 19,
+   "pdf_page": 20,
+   "score": 64,
+   "rationale": "Cheap directional upside with capped cost in a modest-IV market",
+   "rank": 31
+  },
+  {
+   "section": "8.4",
+   "name": "Momentum & carry combo \u2014 FX",
+   "category": "FX",
+   "page": 88,
+   "pdf_page": 89,
+   "score": 64,
+   "rationale": "Blended FX factors beat either alone; moderate fit",
+   "rank": 32
+  },
+  {
+   "section": "2.18",
+   "name": "Calendar call spread",
+   "category": "Options",
+   "page": 24,
+   "pdf_page": 25,
+   "score": 63,
+   "rationale": "Harvests term-structure theta while vol is calm",
+   "rank": 33
+  },
+  {
+   "section": "9.1",
+   "name": "Roll yields",
+   "category": "Commodities",
+   "page": 89,
+   "pdf_page": 90,
+   "score": 63,
+   "rationale": "Backwardation carry harvest; curve-dependent but persistent",
+   "rank": 34
+  },
+  {
+   "section": "5.11",
+   "name": "Carry factor \u2014 bonds",
+   "category": "Fixed Income",
+   "page": 74,
+   "pdf_page": 75,
+   "score": 63,
+   "rationale": "Cross-market bond carry; steady premium",
+   "rank": 35
+  },
+  {
+   "section": "3.3",
+   "name": "Value",
+   "category": "Stocks",
+   "page": 42,
+   "pdf_page": 43,
+   "score": 62,
+   "rationale": "Cheapness alone lags in momentum-led tapes; slow-burn edge",
+   "rank": 36
+  },
+  {
+   "section": "2.20",
+   "name": "Diagonal call spread",
+   "category": "Options",
+   "page": 25,
+   "pdf_page": 26,
+   "score": 62,
+   "rationale": "Covered-call-like income with less capital",
+   "rank": 37
+  },
+  {
+   "section": "7.3",
+   "name": "Volatility carry with two ETNs",
+   "category": "Volatility",
+   "page": 82,
+   "pdf_page": 83,
+   "score": 62,
+   "rationale": "ETN pair carry; product/termination risk",
+   "rank": 38
+  },
+  {
+   "section": "5.9",
+   "name": "Low-risk factor \u2014 bonds",
+   "category": "Fixed Income",
+   "page": 73,
+   "pdf_page": 74,
+   "score": 62,
+   "rationale": "Bond low-beta anomaly; quiet compounder",
+   "rank": 39
+  },
+  {
+   "section": "8.2.1",
+   "name": "High-minus-low carry",
+   "category": "FX",
+   "page": 87,
+   "pdf_page": 88,
+   "score": 62,
+   "rationale": "Rate-differential ranking; works until risk-off",
+   "rank": 40
+  },
+  {
+   "section": "2.19",
+   "name": "Calendar put spread",
+   "category": "Options",
+   "page": 24,
+   "pdf_page": 25,
+   "score": 61,
+   "rationale": "Same theta harvest, put side",
+   "rank": 41
+  },
+  {
+   "section": "3.5",
+   "name": "Implied volatility \u2014 stock selection",
+   "category": "Stocks",
+   "page": 43,
+   "pdf_page": 44,
+   "score": 60,
+   "rationale": "IV-signal stock picking; modest documented edge",
+   "rank": 42
+  },
+  {
+   "section": "4.2",
+   "name": "Alpha rotation",
+   "category": "ETFs",
+   "page": 63,
+   "pdf_page": 64,
+   "score": 60,
+   "rationale": "Chasing recent alpha across ETFs decays fast",
+   "rank": 43
+  },
+  {
+   "section": "2.4",
+   "name": "Protective put",
+   "category": "Options",
+   "page": 19,
+   "pdf_page": 20,
+   "score": 60,
+   "rationale": "Insurance is reasonably priced at VIX ~17; drag if the grind continues",
+   "rank": 44
+  },
+  {
+   "section": "9.2",
+   "name": "Trading on hedging pressure",
+   "category": "Commodities",
+   "page": 90,
+   "pdf_page": 91,
+   "score": 60,
+   "rationale": "Positioning-based premium; slow but real",
+   "rank": 45
+  },
+  {
+   "section": "5.4",
+   "name": "Ladders",
+   "category": "Fixed Income",
+   "page": 70,
+   "pdf_page": 71,
+   "score": 60,
+   "rationale": "Simple reinvestment-risk spreading; income floor for idle cash",
+   "rank": 46
+  },
+  {
+   "section": "8.2",
+   "name": "Carry trade \u2014 FX",
+   "category": "FX",
+   "page": 86,
+   "pdf_page": 87,
+   "score": 60,
+   "rationale": "Classic carry; crash-prone when vol spikes",
+   "rank": 47
+  },
+  {
+   "section": "3.12",
+   "name": "Two moving averages",
+   "category": "Stocks",
+   "page": 50,
+   "pdf_page": 51,
+   "score": 58,
+   "rationale": "Simple trend filter; whipsaw cost rises in a grinding market",
+   "ge": "Genesis trend template \u2014 MA stacking filter",
+   "rank": 48
+  },
+  {
+   "section": "4.3",
+   "name": "R-squared",
+   "category": "ETFs",
+   "page": 63,
+   "pdf_page": 64,
+   "score": 58,
+   "rationale": "Regression-fit timing; modest, data-mined edge",
+   "rank": 49
+  },
+  {
+   "section": "2.40",
+   "name": "Long call butterfly",
+   "category": "Options",
+   "page": 32,
+   "pdf_page": 33,
+   "score": 58,
+   "rationale": "Cheap pin-risk income when the index goes nowhere fast",
+   "rank": 50
+  },
+  {
+   "section": "2.54",
+   "name": "Bullish short seagull spread",
+   "category": "Options",
+   "page": 37,
+   "pdf_page": 38,
+   "score": 58,
+   "rationale": "Financed upside with defined structure; fits mild bullishness",
+   "rank": 51
+  },
+  {
+   "section": "10.3",
+   "name": "Contrarian trading (mean-reversion) \u2014 futures",
+   "category": "Futures",
+   "page": 95,
+   "pdf_page": 96,
+   "score": 58,
+   "rationale": "Short-horizon futures reversion; execution-sensitive",
+   "rank": 52
+  },
+  {
+   "section": "9.3",
+   "name": "Portfolio diversification with commodities",
+   "category": "Commodities",
+   "page": 90,
+   "pdf_page": 91,
+   "score": 58,
+   "rationale": "Inflation-hedge ballast more than alpha",
+   "rank": 53
+  },
+  {
+   "section": "5.10",
+   "name": "Value factor \u2014 bonds",
+   "category": "Fixed Income",
+   "page": 73,
+   "pdf_page": 74,
+   "score": 58,
+   "rationale": "Rich/cheap bond selection",
+   "rank": 54
+  },
+  {
+   "section": "5.6",
+   "name": "Dollar-duration-neutral butterfly",
+   "category": "Fixed Income",
+   "page": 71,
+   "pdf_page": 72,
+   "score": 58,
+   "rationale": "Curve-shape RV without duration bets",
+   "rank": 55
+  },
+  {
+   "section": "12.1",
+   "name": "Convertible arbitrage",
+   "category": "Convertibles",
+   "page": 101,
+   "pdf_page": 102,
+   "score": 58,
+   "rationale": "Long convert / short stock gamma; decent when issuance is healthy",
+   "rank": 56
+  },
+  {
+   "section": "3.13",
+   "name": "Three moving averages",
+   "category": "Stocks",
+   "page": 51,
+   "pdf_page": 52,
+   "score": 57,
+   "rationale": "Extra filter cuts whipsaws slightly, adds lag",
+   "ge": "Genesis trend template \u2014 MA stacking filter",
+   "rank": 57
+  },
+  {
+   "section": "2.40.1",
+   "name": "Modified call butterfly",
+   "category": "Options",
+   "page": 32,
+   "pdf_page": 33,
+   "score": 57,
+   "rationale": "Asymmetric wings tilt the fly bullish \u2014 matches the drift",
+   "rank": 58
+  },
+  {
+   "section": "10.3.1",
+   "name": "Contrarian trading \u2014 market activity filter",
+   "category": "Futures",
+   "page": 95,
+   "pdf_page": 96,
+   "score": 57,
+   "rationale": "Volume-filtered variant",
+   "rank": 59
+  },
+  {
+   "section": "9.5",
+   "name": "Skewness premium",
+   "category": "Commodities",
+   "page": 91,
+   "pdf_page": 92,
+   "score": 57,
+   "rationale": "Selling lottery-skew commodities; niche but documented",
+   "rank": 60
+  },
+  {
+   "section": "5.8",
+   "name": "Regression-weighted butterfly",
+   "category": "Fixed Income",
+   "page": 72,
+   "pdf_page": 73,
+   "score": 57,
+   "rationale": "Statistically weighted curve trade",
+   "rank": 61
+  },
+  {
+   "section": "2.41",
+   "name": "Long put butterfly",
+   "category": "Options",
+   "page": 32,
+   "pdf_page": 33,
+   "score": 56,
+   "rationale": "Same range bet from the put side",
+   "rank": 62
+  },
+  {
+   "section": "2.44",
+   "name": "\"Long\" iron butterfly",
+   "category": "Options",
+   "page": 34,
+   "pdf_page": 35,
+   "score": 56,
+   "rationale": "Tight-body premium capture; needs the pin",
+   "rank": 63
+  },
+  {
+   "section": "5.7",
+   "name": "Fifty-fifty butterfly",
+   "category": "Fixed Income",
+   "page": 72,
+   "pdf_page": 73,
+   "score": 56,
+   "rationale": "Simpler weighting, same curve bet",
+   "rank": 64
+  },
+  {
+   "section": "19.5",
+   "name": "Trading on economic announcements",
+   "category": "Global Macro",
+   "page": 123,
+   "pdf_page": 124,
+   "score": 56,
+   "rationale": "Event drift around data prints; execution-sensitive",
+   "rank": 65
+  },
+  {
+   "section": "15.3.1",
+   "name": "Distress risk puzzle \u2014 risk management",
+   "category": "Distressed",
+   "page": 110,
+   "pdf_page": 111,
+   "score": 56,
+   "rationale": "Risk-managed variant is the investable version",
+   "rank": 66
+  },
+  {
+   "section": "3.11",
+   "name": "Single moving average",
+   "category": "Stocks",
+   "page": 49,
+   "pdf_page": 50,
+   "score": 55,
+   "rationale": "Crude timing tool; fine as a filter, weak standalone",
+   "ge": "Genesis trend template \u2014 MA stacking filter",
+   "rank": 67
+  },
+  {
+   "section": "2.26",
+   "name": "Short strangle",
+   "category": "Options",
+   "page": 27,
+   "pdf_page": 28,
+   "score": 55,
+   "rationale": "VRP harvest works until it doesn't \u2014 undefined risk in a cautious regime",
+   "rank": 68
+  },
+  {
+   "section": "2.41.1",
+   "name": "Modified put butterfly",
+   "category": "Options",
+   "page": 33,
+   "pdf_page": 34,
+   "score": 55,
+   "rationale": "Asymmetric put fly variant",
+   "rank": 69
+  },
+  {
+   "section": "2.46",
+   "name": "Long call condor",
+   "category": "Options",
+   "page": 34,
+   "pdf_page": 35,
+   "score": 55,
+   "rationale": "Wider body than the fly; modest range income",
+   "rank": 70
+  },
+  {
+   "section": "2.57",
+   "name": "Bullish long seagull spread",
+   "category": "Options",
+   "page": 39,
+   "pdf_page": 40,
+   "score": 55,
+   "rationale": "Protected bullish three-legger",
+   "rank": 71
+  },
+  {
+   "section": "10.2",
+   "name": "Calendar spread \u2014 futures",
+   "category": "Futures",
+   "page": 94,
+   "pdf_page": 95,
+   "score": 55,
+   "rationale": "Term-structure carry; steadier than outright direction",
+   "rank": 72
+  },
+  {
+   "section": "9.4",
+   "name": "Value \u2014 commodities",
+   "category": "Commodities",
+   "page": 90,
+   "pdf_page": 91,
+   "score": 55,
+   "rationale": "Long-cheap/short-rich baskets; long cycles",
+   "rank": 73
+  },
+  {
+   "section": "5.8.1",
+   "name": "Maturity-weighted butterfly",
+   "category": "Fixed Income",
+   "page": 73,
+   "pdf_page": 74,
+   "score": 55,
+   "rationale": "Another weighting scheme",
+   "rank": 74
+  },
+  {
+   "section": "5.3",
+   "name": "Barbells",
+   "category": "Fixed Income",
+   "page": 69,
+   "pdf_page": 70,
+   "score": 55,
+   "rationale": "Convexity tilt; useful if curve moves get violent",
+   "rank": 75
+  },
+  {
+   "section": "5.13",
+   "name": "Yield curve spread (flatteners & steepeners)",
+   "category": "Fixed Income",
+   "page": 75,
+   "pdf_page": 76,
+   "score": 55,
+   "rationale": "Directional curve bets; macro-call dependent",
+   "rank": 76
+  },
+  {
+   "section": "8.3",
+   "name": "Dollar carry trade",
+   "category": "FX",
+   "page": 88,
+   "pdf_page": 89,
+   "score": 55,
+   "rationale": "Timing the dollar leg; regime-sensitive",
+   "rank": 77
+  },
+  {
+   "section": "15.3",
+   "name": "Distress risk puzzle",
+   "category": "Distressed",
+   "page": 110,
+   "pdf_page": 111,
+   "score": 55,
+   "rationale": "Shorting high-distress equities exploits a documented anomaly",
+   "rank": 78
+  },
+  {
+   "section": "3.14",
+   "name": "Support and resistance",
+   "category": "Stocks",
+   "page": 51,
+   "pdf_page": 52,
+   "score": 54,
+   "rationale": "Discretionary levels; edge is thin without flow information",
+   "rank": 79
+  },
+  {
+   "section": "2.47",
+   "name": "Long put condor",
+   "category": "Options",
+   "page": 35,
+   "pdf_page": 36,
+   "score": 54,
+   "rationale": "Put-side range structure",
+   "rank": 80
+  },
+  {
+   "section": "3.15",
+   "name": "Channel",
+   "category": "Stocks",
+   "page": 52,
+   "pdf_page": 53,
+   "score": 53,
+   "rationale": "Breakout channels whipsaw in range-bound singles",
+   "ge": "Turtle engine \u2014 Donchian channel breakout",
+   "rank": 81
+  },
+  {
+   "section": "2.21",
+   "name": "Diagonal put spread",
+   "category": "Options",
+   "page": 25,
+   "pdf_page": 26,
+   "score": 53,
+   "rationale": "Put-side diagonal; income with bearish tilt",
+   "rank": 82
+  },
+  {
+   "section": "6.3.1",
+   "name": "Dispersion trading \u2014 subset portfolio",
+   "category": "Indexes",
+   "page": 78,
+   "pdf_page": 79,
+   "score": 53,
+   "rationale": "Cheaper subset implementation",
+   "rank": 83
+  },
+  {
+   "section": "2.8",
+   "name": "Bear call spread",
+   "category": "Options",
+   "page": 20,
+   "pdf_page": 21,
+   "score": 52,
+   "rationale": "Credit hedge against stalls; fights the drift",
+   "rank": 84
+  },
+  {
+   "section": "6.3",
+   "name": "Dispersion trading in equity indexes",
+   "category": "Indexes",
+   "page": 77,
+   "pdf_page": 78,
+   "score": 52,
+   "rationale": "Short index vol vs long single-name vol; correlation bet, institutional plumbing",
+   "rank": 85
+  },
+  {
+   "section": "5.5",
+   "name": "Bond immunization",
+   "category": "Fixed Income",
+   "page": 70,
+   "pdf_page": 71,
+   "score": 52,
+   "rationale": "Liability matching, not alpha",
+   "rank": 86
+  },
+  {
+   "section": "8.1",
+   "name": "Moving averages with HP filter \u2014 FX",
+   "category": "FX",
+   "page": 85,
+   "pdf_page": 86,
+   "score": 52,
+   "rationale": "Filtered FX trend; modest standalone edge",
+   "rank": 87
+  },
+  {
+   "section": "12.2",
+   "name": "Convertible option-adjusted spread",
+   "category": "Convertibles",
+   "page": 102,
+   "pdf_page": 103,
+   "score": 52,
+   "rationale": "OAS-based rich/cheap converts",
+   "rank": 88
+  },
+  {
+   "section": "19.4",
+   "name": "Global fixed-income strategy",
+   "category": "Global Macro",
+   "page": 123,
+   "pdf_page": 124,
+   "score": 52,
+   "rationale": "Cross-country bond RV",
+   "rank": 89
+  },
+  {
+   "section": "16.4",
+   "name": "Real estate momentum \u2014 regional approach",
+   "category": "Real Estate",
+   "page": 113,
+   "pdf_page": 114,
+   "score": 52,
+   "rationale": "Regional price momentum persists in housing data",
+   "rank": 90
+  },
+  {
+   "section": "2.25",
+   "name": "Short straddle",
+   "category": "Options",
+   "page": 27,
+   "pdf_page": 28,
+   "score": 50,
+   "rationale": "Max theta, max tail risk \u2014 cautious regime argues for wings",
+   "rank": 91
+  },
+  {
+   "section": "7.5",
+   "name": "Volatility skew \u2014 long risk reversal",
+   "category": "Volatility",
+   "page": 84,
+   "pdf_page": 85,
+   "score": 50,
+   "rationale": "Skew harvesting; crowded and path-dependent",
+   "rank": 92
+  },
+  {
+   "section": "5.2",
+   "name": "Bullets",
+   "category": "Fixed Income",
+   "page": 69,
+   "pdf_page": 70,
+   "score": 50,
+   "rationale": "Concentrated-maturity holding; building block",
+   "rank": 93
+  },
+  {
+   "section": "16.2",
+   "name": "Mixed-asset diversification with real estate",
+   "category": "Real Estate",
+   "page": 111,
+   "pdf_page": 112,
+   "score": 50,
+   "rationale": "Allocation ballast via REITs",
+   "rank": 94
+  },
+  {
+   "section": "2.33",
+   "name": "Covered short strangle",
+   "category": "Options",
+   "page": 29,
+   "pdf_page": 30,
+   "score": 48,
+   "rationale": "Aggressive income overlay on longs; assignment risk both ways",
+   "rank": 95
+  },
+  {
+   "section": "2.12",
+   "name": "Long combo",
+   "category": "Options",
+   "page": 21,
+   "pdf_page": 22,
+   "score": 48,
+   "rationale": "Synthetic bullish tilt at low cost",
+   "rank": 96
+  },
+  {
+   "section": "9.6",
+   "name": "Trading with pricing models",
+   "category": "Commodities",
+   "page": 91,
+   "pdf_page": 92,
+   "score": 48,
+   "rationale": "Model-implied mispricing; estimation-heavy",
+   "rank": 97
+  },
+  {
+   "section": "6.2",
+   "name": "Cash-and-carry arbitrage \u2014 indexes",
+   "category": "Indexes",
+   "page": 77,
+   "pdf_page": 78,
+   "score": 48,
+   "rationale": "Basis is tight; a financing-cost game now",
+   "rank": 98
+  },
+  {
+   "section": "19.3",
+   "name": "Global macro inflation hedge",
+   "category": "Global Macro",
+   "page": 122,
+   "pdf_page": 123,
+   "score": 48,
+   "rationale": "Inflation basket; less urgent with inflation off the boil",
+   "rank": 99
+  },
+  {
+   "section": "15.1",
+   "name": "Buying and holding distressed debt",
+   "category": "Distressed",
+   "page": 108,
+   "pdf_page": 109,
+   "score": 48,
+   "rationale": "Cycle-timing game; default cycle is quiet",
+   "rank": 100
+  },
+  {
+   "section": "13.1",
+   "name": "Municipal bond tax arbitrage",
+   "category": "Tax Arbitrage",
+   "page": 102,
+   "pdf_page": 103,
+   "score": 48,
+   "rationale": "Tax-exempt carry vs funding; bracket-dependent",
+   "rank": 101
+  },
+  {
+   "section": "2.36",
+   "name": "Call ratio backspread",
+   "category": "Options",
+   "page": 30,
+   "pdf_page": 31,
+   "score": 47,
+   "rationale": "Long convexity if the melt-up accelerates; bleeds theta meanwhile",
+   "rank": 102
+  },
+  {
+   "section": "16.5",
+   "name": "Inflation hedging with real estate",
+   "category": "Real Estate",
+   "page": 113,
+   "pdf_page": 114,
+   "score": 47,
+   "rationale": "Long-horizon hedge; less urgent now",
+   "rank": 103
+  },
+  {
+   "section": "2.23",
+   "name": "Long strangle",
+   "category": "Options",
+   "page": 26,
+   "pdf_page": 27,
+   "score": 46,
+   "rationale": "Long vol is only mid-priced; needs a catalyst",
+   "rank": 104
+  },
+  {
+   "section": "2.38",
+   "name": "Ratio call spread",
+   "category": "Options",
+   "page": 31,
+   "pdf_page": 32,
+   "score": 46,
+   "rationale": "Premium-financed upside with naked tail beyond the strikes",
+   "rank": 105
+  },
+  {
+   "section": "16.3.3",
+   "name": "Property type and geographic diversification",
+   "category": "Real Estate",
+   "page": 113,
+   "pdf_page": 114,
+   "score": 46,
+   "rationale": "Diversification within RE",
+   "rank": 106
+  },
+  {
+   "section": "3.17",
+   "name": "Machine learning \u2014 single-stock KNN",
+   "category": "Stocks",
+   "page": 53,
+   "pdf_page": 54,
+   "score": 45,
+   "rationale": "Overfit-prone on single names without heavy feature discipline",
+   "rank": 107
+  },
+  {
+   "section": "2.9",
+   "name": "Bear put spread",
+   "category": "Options",
+   "page": 20,
+   "pdf_page": 21,
+   "score": 45,
+   "rationale": "Defined-risk bearish bet \u2014 against the current trend",
+   "rank": 108
+  },
+  {
+   "section": "2.27",
+   "name": "Short guts",
+   "category": "Options",
+   "page": 27,
+   "pdf_page": 28,
+   "score": 45,
+   "rationale": "ITM premium sale; wide but capital-heavy",
+   "rank": 109
+  },
+  {
+   "section": "2.14",
+   "name": "Bull call ladder",
+   "category": "Options",
+   "page": 22,
+   "pdf_page": 23,
+   "score": 45,
+   "rationale": "Income-financed upside that caps then reverses \u2014 awkward here",
+   "rank": 110
+  },
+  {
+   "section": "10.1",
+   "name": "Hedging risk with futures",
+   "category": "Futures",
+   "page": 92,
+   "pdf_page": 93,
+   "score": 45,
+   "rationale": "Risk management, not alpha \u2014 score reflects return potential",
+   "rank": 111
+  },
+  {
+   "section": "5.14",
+   "name": "CDS basis arbitrage",
+   "category": "Fixed Income",
+   "page": 75,
+   "pdf_page": 76,
+   "score": 45,
+   "rationale": "Basis is thin and balance-sheet-intensive",
+   "rank": 112
+  },
+  {
+   "section": "11.7",
+   "name": "Mortgage-backed security (MBS) trading",
+   "category": "Structured Assets",
+   "page": 100,
+   "pdf_page": 101,
+   "score": 45,
+   "rationale": "Prepayment-model RV; institutional data game",
+   "rank": 113
+  },
+  {
+   "section": "16.3",
+   "name": "Intra-asset diversification within real estate",
+   "category": "Real Estate",
+   "page": 112,
+   "pdf_page": 113,
+   "score": 45,
+   "rationale": "Same, general form",
+   "rank": 114
+  },
+  {
+   "section": "17.3",
+   "name": "Liquidity management",
+   "category": "Cash",
+   "page": 115,
+   "pdf_page": 116,
+   "score": 45,
+   "rationale": "Cash optimization \u2014 worth doing, not alpha",
+   "rank": 115
+  },
+  {
+   "section": "2.22",
+   "name": "Long straddle",
+   "category": "Options",
+   "page": 26,
+   "pdf_page": 27,
+   "score": 44,
+   "rationale": "Pure long vol; pays only on a regime break",
+   "rank": 116
+  },
+  {
+   "section": "2.32",
+   "name": "Covered short straddle",
+   "category": "Options",
+   "page": 29,
+   "pdf_page": 30,
+   "score": 44,
+   "rationale": "Doubles down on assignment; rich income, poor asymmetry",
+   "rank": 117
+  },
+  {
+   "section": "2.37",
+   "name": "Put ratio backspread",
+   "category": "Options",
+   "page": 31,
+   "pdf_page": 32,
+   "score": 44,
+   "rationale": "Crash convexity financed by near puts; cheap disaster hedge",
+   "rank": 118
+  },
+  {
+   "section": "10.1.2",
+   "name": "Interest rate risk hedging",
+   "category": "Futures",
+   "page": 93,
+   "pdf_page": 94,
+   "score": 44,
+   "rationale": "Duration hedging utility",
+   "rank": 119
+  },
+  {
+   "section": "5.15",
+   "name": "Swap-spread arbitrage",
+   "category": "Fixed Income",
+   "page": 76,
+   "pdf_page": 77,
+   "score": 44,
+   "rationale": "LTCM's old trade; institutional repo required",
+   "rank": 120
+  },
+  {
+   "section": "16.3.1",
+   "name": "Property type diversification",
+   "category": "Real Estate",
+   "page": 112,
+   "pdf_page": 113,
+   "score": 44,
+   "rationale": "Sub-variant",
+   "rank": 121
+  },
+  {
+   "section": "2.39",
+   "name": "Ratio put spread",
+   "category": "Options",
+   "page": 31,
+   "pdf_page": 32,
+   "score": 43,
+   "rationale": "Put-side ratio; naked downside tail in a cautious regime",
+   "rank": 122
+  },
+  {
+   "section": "16.3.2",
+   "name": "Economic diversification",
+   "category": "Real Estate",
+   "page": 112,
+   "pdf_page": 113,
+   "score": 43,
+   "rationale": "Sub-variant",
+   "rank": 123
+  },
+  {
+   "section": "2.15",
+   "name": "Bull put ladder",
+   "category": "Options",
+   "page": 23,
+   "pdf_page": 24,
+   "score": 42,
+   "rationale": "Multi-leg put structure; complexity outweighs edge",
+   "rank": 124
+  },
+  {
+   "section": "2.51",
+   "name": "Short iron condor",
+   "category": "Options",
+   "page": 36,
+   "pdf_page": 37,
+   "score": 42,
+   "rationale": "Long the wings \u2014 a breakout bet the grind doesn't favor",
+   "rank": 125
+  },
+  {
+   "section": "2.28",
+   "name": "Long call synthetic straddle",
+   "category": "Options",
+   "page": 28,
+   "pdf_page": 29,
+   "score": 42,
+   "rationale": "Synthetic long vol; simpler to buy the straddle",
+   "rank": 126
+  },
+  {
+   "section": "2.56",
+   "name": "Bearish short seagull spread",
+   "category": "Options",
+   "page": 38,
+   "pdf_page": 39,
+   "score": 42,
+   "rationale": "Bearish financed structure; against trend",
+   "rank": 127
+  },
+  {
+   "section": "10.1.1",
+   "name": "Cross-hedging",
+   "category": "Futures",
+   "page": 93,
+   "pdf_page": 94,
+   "score": 42,
+   "rationale": "Proxy-hedge basis risk without return",
+   "rank": 128
+  },
+  {
+   "section": "6.4",
+   "name": "Intraday arbitrage between index ETFs",
+   "category": "Indexes",
+   "page": 79,
+   "pdf_page": 80,
+   "score": 42,
+   "rationale": "Latency game owned by HFT",
+   "rank": 129
+  },
+  {
+   "section": "15.2",
+   "name": "Active distressed investing",
+   "category": "Distressed",
+   "page": 109,
+   "pdf_page": 110,
+   "score": 42,
+   "rationale": "Control-oriented; specialist capital and courts",
+   "rank": 130
+  },
+  {
+   "section": "14.2",
+   "name": "TIPS-Treasury arbitrage",
+   "category": "Miscellaneous",
+   "page": 105,
+   "pdf_page": 106,
+   "score": 42,
+   "rationale": "Famous basis trade; capital-intensive, episodic",
+   "rank": 131
+  },
+  {
+   "section": "2.29",
+   "name": "Long put synthetic straddle",
+   "category": "Options",
+   "page": 28,
+   "pdf_page": 29,
+   "score": 41,
+   "rationale": "Same, put-constructed",
+   "rank": 132
+  },
+  {
+   "section": "4.5",
+   "name": "Leveraged ETFs (LETFs)",
+   "category": "ETFs",
+   "page": 64,
+   "pdf_page": 65,
+   "score": 40,
+   "rationale": "Volatility decay punishes leveraged holds in choppy tape",
+   "rank": 133
+  },
+  {
+   "section": "2.16",
+   "name": "Bear call ladder",
+   "category": "Options",
+   "page": 23,
+   "pdf_page": 24,
+   "score": 40,
+   "rationale": "Upside-exposed credit ladder; mismatched to the tape",
+   "rank": 134
+  },
+  {
+   "section": "2.24",
+   "name": "Long guts",
+   "category": "Options",
+   "page": 26,
+   "pdf_page": 27,
+   "score": 40,
+   "rationale": "ITM strangle; expensive way to be long vol",
+   "rank": 135
+  },
+  {
+   "section": "2.10",
+   "name": "Long synthetic forward",
+   "category": "Options",
+   "page": 21,
+   "pdf_page": 22,
+   "score": 40,
+   "rationale": "Synthetic long future; cleaner to own delta directly",
+   "rank": 136
+  },
+  {
+   "section": "2.55",
+   "name": "Bearish long seagull spread",
+   "category": "Options",
+   "page": 38,
+   "pdf_page": 39,
+   "score": 40,
+   "rationale": "Bearish three-legger; against trend",
+   "rank": 137
+  },
+  {
+   "section": "2.45",
+   "name": "\"Short\" iron butterfly",
+   "category": "Options",
+   "page": 34,
+   "pdf_page": 35,
+   "score": 40,
+   "rationale": "Long the body \u2014 needs a move now",
+   "rank": 138
+  },
+  {
+   "section": "7.6",
+   "name": "Volatility trading with variance swaps",
+   "category": "Volatility",
+   "page": 84,
+   "pdf_page": 85,
+   "score": 40,
+   "rationale": "OTC access required",
+   "rank": 139
+  },
+  {
+   "section": "14.1",
+   "name": "Inflation hedging \u2014 inflation swaps",
+   "category": "Miscellaneous",
+   "page": 104,
+   "pdf_page": 105,
+   "score": 40,
+   "rationale": "OTC inflation exposure; hedging utility",
+   "rank": 140
+  },
+  {
+   "section": "17.4",
+   "name": "Repurchase agreement (REPO)",
+   "category": "Cash",
+   "page": 115,
+   "pdf_page": 116,
+   "score": 40,
+   "rationale": "Institutional funding market",
+   "rank": 141
+  },
+  {
+   "section": "2.17",
+   "name": "Bear put ladder",
+   "category": "Options",
+   "page": 23,
+   "pdf_page": 24,
+   "score": 38,
+   "rationale": "Bearish ladder; against trend",
+   "rank": 142
+  },
+  {
+   "section": "2.34",
+   "name": "Strap",
+   "category": "Options",
+   "page": 30,
+   "pdf_page": 31,
+   "score": 38,
+   "rationale": "2:1 bullish vol bet; pricey without a catalyst",
+   "rank": 143
+  },
+  {
+   "section": "2.30",
+   "name": "Short call synthetic straddle",
+   "category": "Options",
+   "page": 28,
+   "pdf_page": 29,
+   "score": 38,
+   "rationale": "Synthetic short vol with extra legs",
+   "rank": 144
+  },
+  {
+   "section": "16.6",
+   "name": "Fix-and-flip",
+   "category": "Real Estate",
+   "page": 114,
+   "pdf_page": 115,
+   "score": 38,
+   "rationale": "Operationally heavy; rate-sensitive margins",
+   "rank": 145
+  },
+  {
+   "section": "18.3",
+   "name": "Crypto sentiment \u2014 naive Bayes Bernoulli",
+   "category": "Cryptocurrencies",
+   "page": 120,
+   "pdf_page": 121,
+   "score": 38,
+   "rationale": "Sentiment classifier on a noisy asset; fragile edge",
+   "rank": 146
+  },
+  {
+   "section": "2.31",
+   "name": "Short put synthetic straddle",
+   "category": "Options",
+   "page": 29,
+   "pdf_page": 30,
+   "score": 37,
+   "rationale": "Same, put-constructed",
+   "rank": 147
+  },
+  {
+   "section": "2.35",
+   "name": "Strip",
+   "category": "Options",
+   "page": 30,
+   "pdf_page": 31,
+   "score": 36,
+   "rationale": "2:1 bearish vol bet; against trend and paying theta",
+   "rank": 148
+  },
+  {
+   "section": "2.48",
+   "name": "Short call condor",
+   "category": "Options",
+   "page": 35,
+   "pdf_page": 36,
+   "score": 36,
+   "rationale": "Breakout bet, wider; same problem",
+   "rank": 149
+  },
+  {
+   "section": "15.2.2",
+   "name": "Buying outstanding debt",
+   "category": "Distressed",
+   "page": 109,
+   "pdf_page": 110,
+   "score": 36,
+   "rationale": "Sub-strategy of control investing",
+   "rank": 150
+  },
+  {
+   "section": "2.42",
+   "name": "Short call butterfly",
+   "category": "Options",
+   "page": 33,
+   "pdf_page": 34,
+   "score": 35,
+   "rationale": "Small credit for a breakout bet; poor odds in a grind",
+   "rank": 151
+  },
+  {
+   "section": "2.49",
+   "name": "Short put condor",
+   "category": "Options",
+   "page": 35,
+   "pdf_page": 36,
+   "score": 35,
+   "rationale": "Put-side breakout bet, wider",
+   "rank": 152
+  },
+  {
+   "section": "2.13",
+   "name": "Short combo",
+   "category": "Options",
+   "page": 22,
+   "pdf_page": 23,
+   "score": 35,
+   "rationale": "Synthetic short tilt; against trend",
+   "rank": 153
+  },
+  {
+   "section": "2.5",
+   "name": "Protective call",
+   "category": "Options",
+   "page": 19,
+   "pdf_page": 20,
+   "score": 35,
+   "rationale": "Insures a short stock position \u2014 not the book to be running here",
+   "rank": 154
+  },
+  {
+   "section": "15.2.1",
+   "name": "Planning a reorganization",
+   "category": "Distressed",
+   "page": 109,
+   "pdf_page": 110,
+   "score": 35,
+   "rationale": "Legal-process alpha; not a screen trade",
+   "rank": 155
+  },
+  {
+   "section": "11.3",
+   "name": "Carry, senior/mezzanine \u2014 index hedging",
+   "category": "Structured Assets",
+   "page": 99,
+   "pdf_page": 100,
+   "score": 35,
+   "rationale": "Tranche carry; complexity premium mostly institutional",
+   "rank": 156
+  },
+  {
+   "section": "18.2",
+   "name": "Crypto \u2014 artificial neural network (ANN)",
+   "category": "Cryptocurrencies",
+   "page": 116,
+   "pdf_page": 117,
+   "score": 35,
+   "rationale": "ML on crypto prices; overfit risk is the strategy",
+   "rank": 157
+  },
+  {
+   "section": "2.43",
+   "name": "Short put butterfly",
+   "category": "Options",
+   "page": 33,
+   "pdf_page": 34,
+   "score": 34,
+   "rationale": "Put-side breakout bet",
+   "rank": 158
+  },
+  {
+   "section": "11.2",
+   "name": "Carry, equity tranche \u2014 index hedging",
+   "category": "Structured Assets",
+   "page": 99,
+   "pdf_page": 100,
+   "score": 34,
+   "rationale": "Equity-tranche correlation carry",
+   "rank": 159
+  },
+  {
+   "section": "15.2.3",
+   "name": "Loan-to-own",
+   "category": "Distressed",
+   "page": 110,
+   "pdf_page": 111,
+   "score": 33,
+   "rationale": "Credit-to-equity control play; specialist",
+   "rank": 160
+  },
+  {
+   "section": "11.4",
+   "name": "Carry \u2014 tranche hedging",
+   "category": "Structured Assets",
+   "page": 99,
+   "pdf_page": 100,
+   "score": 33,
+   "rationale": "Tranche-vs-tranche hedged carry",
+   "rank": 161
+  },
+  {
+   "section": "11.5",
+   "name": "Carry \u2014 CDS hedging",
+   "category": "Structured Assets",
+   "page": 100,
+   "pdf_page": 101,
+   "score": 32,
+   "rationale": "Single-name-hedged tranche carry",
+   "rank": 162
+  },
+  {
+   "section": "2.11",
+   "name": "Short synthetic forward",
+   "category": "Options",
+   "page": 21,
+   "pdf_page": 22,
+   "score": 30,
+   "rationale": "Synthetic short future; against trend",
+   "rank": 163
+  },
+  {
+   "section": "2.3",
+   "name": "Covered put",
+   "category": "Options",
+   "page": 18,
+   "pdf_page": 19,
+   "score": 30,
+   "rationale": "Short stock + short put; unlimited upside risk in an uptrend",
+   "rank": 164
+  },
+  {
+   "section": "11.6",
+   "name": "CDOs \u2014 curve trades",
+   "category": "Structured Assets",
+   "page": 100,
+   "pdf_page": 101,
+   "score": 30,
+   "rationale": "Tranche curve RV; 2008 taught the liquidity lesson",
+   "rank": 165
+  },
+  {
+   "section": "13.2",
+   "name": "Cross-border tax arbitrage",
+   "category": "Tax Arbitrage",
+   "page": 103,
+   "pdf_page": 104,
+   "score": 30,
+   "rationale": "Dividend-withholding games; regulators keep closing them",
+   "rank": 166
+  },
+  {
+   "section": "14.4",
+   "name": "Energy \u2014 spark spread",
+   "category": "Miscellaneous",
+   "page": 108,
+   "pdf_page": 109,
+   "score": 30,
+   "rationale": "Generator economics; physical/OTC market",
+   "rank": 167
+  },
+  {
+   "section": "13.2.1",
+   "name": "Cross-border tax arbitrage with options",
+   "category": "Tax Arbitrage",
+   "page": 104,
+   "pdf_page": 105,
+   "score": 28,
+   "rationale": "Options-implemented variant; same shrinkage",
+   "rank": 168
+  },
+  {
+   "section": "2.52",
+   "name": "Long box",
+   "category": "Options",
+   "page": 37,
+   "pdf_page": 38,
+   "score": 25,
+   "rationale": "Locked-in rate arb; fees and margin eat the edge for non-institutions",
+   "rank": 169
+  },
+  {
+   "section": "14.3",
+   "name": "Weather risk \u2014 demand hedging",
+   "category": "Miscellaneous",
+   "page": 106,
+   "pdf_page": 107,
+   "score": 25,
+   "rationale": "Weather derivatives; thin, specialist market",
+   "rank": 170
+  },
+  {
+   "section": "17.5",
+   "name": "Pawnbroking",
+   "category": "Cash",
+   "page": 115,
+   "pdf_page": 116,
+   "score": 22,
+   "rationale": "A lending business, not a trading strategy",
+   "rank": 171
+  },
+  {
+   "section": "8.5",
+   "name": "FX triangular arbitrage",
+   "category": "FX",
+   "page": 89,
+   "pdf_page": 90,
+   "score": 20,
+   "rationale": "Microsecond arbitrage \u2014 HFT-only territory",
+   "rank": 172
+  },
+  {
+   "section": "17.6",
+   "name": "Loan sharking",
+   "category": "Cash",
+   "page": 116,
+   "pdf_page": 117,
+   "score": 1,
+   "rationale": "Illegal \u2014 in the book for completeness only",
+   "rank": 173
+  },
+  {
+   "section": "17.2",
+   "name": "Money laundering \u2014 the dark side of cash",
+   "category": "Cash",
+   "page": 114,
+   "pdf_page": 115,
+   "score": 0,
+   "rationale": "Illegal \u2014 in the book as a cautionary description only",
+   "rank": 174
+  }
+ ]
+}

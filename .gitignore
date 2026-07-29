@@ -1,0 +1,16 @@
+# secrets — never commit
+**/state/fmp.env
+**/state/schwab.env
+**/state/sec.env
+**/state/schwab_tokens.json
+**/state/callback_cert.pem
+**/state/callback_key.pem
+# operational state — lives on the running host, not in git
+skills/*/state/*.json
+skills/*/state/*.jsonl
+skills/*/state/cache/
+skills/*/state/dashboard.html
+__pycache__/
+*.pyc
+.DS_Store
+nohup.out

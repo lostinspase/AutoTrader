@@ -1,0 +1,11 @@
+[Unit]
+Description=AutoTrader live dashboard (Genesis+Exodus) on :8090
+After=network-online.target
+
+[Service]
+ExecStart=/usr/bin/python3 %h/projects/AutoTrader/skills/genesis-exodus-schwab/scripts/dashboard_server.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target

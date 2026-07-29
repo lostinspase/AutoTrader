@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Strategy Monitor</title>
+<style>
+  :root {
+    --bg: #0d1117; --panel: #161b22; --panel2: #1c2129; --border: #2d333b;
+    --text: #e6edf3; --muted: #8b949e; --green: #3fb950; --red: #f85149;
+    --amber: #d29922; --blue: #58a6ff;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 14px/1.45 -apple-system, "SF Pro Text", Segoe UI, Roboto, sans-serif; }
+  header { display: flex; align-items: baseline; gap: 12px; padding: 18px 24px 8px; }
+  header h1 { font-size: 19px; margin: 0; }
+  header .sub { color: var(--muted); font-size: 12px; }
+  main { padding: 0 24px 40px; max-width: 1180px; margin: 0 auto; }
+  .strategy { background: var(--panel); border: 1px solid var(--border);
+              border-radius: 10px; margin-top: 18px; overflow: hidden; }
+  .strat-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+                padding: 14px 18px; border-bottom: 1px solid var(--border); }
+  .strat-head h2 { font-size: 16px; margin: 0; }
+  .badge { font-size: 11px; padding: 2px 9px; border-radius: 20px; font-weight: 600;
+           letter-spacing: .3px; }
+  .badge.live   { background: #1c3627; color: var(--green); }
+  .badge.halted { background: #3d1d1f; color: var(--red); }
+  .badge.idle   { background: #2d333b; color: var(--muted); }
+  .badge.regime { background: #2b2513; color: var(--amber); }
+  .heartbeat { margin-left: auto; color: var(--muted); font-size: 12px; }
+  .heartbeat.stale { color: var(--red); font-weight: 600; }
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+          gap: 1px; background: var(--border); border-bottom: 1px solid var(--border); }
+  .kpi { background: var(--panel2); padding: 12px 16px; }
+  .kpi .label { font-size: 11px; color: var(--muted); text-transform: uppercase;
+                letter-spacing: .5px; }
+  .kpi .value { font-size: 20px; font-weight: 650; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .kpi .hint { font-size: 11px; color: var(--muted); }
+  .pos { color: var(--green); } .neg { color: var(--red); }
+  .body { display: grid; grid-template-columns: 1.15fr 1fr; gap: 18px; padding: 16px 18px; }
+  @media (max-width: 900px) { .body { grid-template-columns: 1fr; } }
+  section h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .6px;
+               color: var(--muted); margin: 14px 0 8px; }
+  section h3:first-child { margin-top: 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px;
+          font-variant-numeric: tabular-nums; }
+  th { text-align: left; color: var(--muted); font-weight: 500; font-size: 11px;
+       padding: 4px 8px; border-bottom: 1px solid var(--border); }
+  td { padding: 5px 8px; border-bottom: 1px solid #21262d; }
+  td.num, th.num { text-align: right; }
+  svg.curve { width: 100%; height: 150px; display: block; }
+  .log { max-height: 260px; overflow-y: auto; font-size: 12px; }
+  .log .row { padding: 6px 8px; border-bottom: 1px solid #21262d; }
+  .log .ts { color: var(--muted); white-space: nowrap; }
+  .log .dec { color: var(--text); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { background: var(--panel2); border: 1px solid var(--border); border-radius: 6px;
+          padding: 3px 10px; font-size: 12px; color: var(--muted); }
+  .chip b { color: var(--text); }
+  .empty { color: var(--muted); font-size: 13px; padding: 6px 0; }
+  .error { color: var(--red); padding: 14px 18px; }
+  .tabs { display: flex; gap: 4px; }
+  .tab { background: none; border: 1px solid transparent; color: var(--muted); font: inherit;
+         font-size: 13px; padding: 5px 14px; border-radius: 8px; cursor: pointer; }
+  .tab:hover { color: var(--text); }
+  .tab.active { background: var(--panel); border-color: var(--border); color: var(--text); font-weight: 600; }
+  .lib-note { background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+              padding: 12px 16px; margin-top: 18px; color: var(--muted); font-size: 13px; }
+  .lib-note a { color: var(--blue); }
+  .filters { display: flex; flex-wrap: wrap; gap: 6px; margin: 14px 0 4px; }
+  .fchip { background: var(--panel); border: 1px solid var(--border); border-radius: 20px;
+           color: var(--muted); font: inherit; font-size: 12px; padding: 3px 12px; cursor: pointer; }
+  .fchip.on { background: #16283f; border-color: var(--blue); color: var(--blue); }
+  table.lib td { vertical-align: top; }
+  table.lib .rk { color: var(--muted); width: 34px; }
+  table.lib a { color: var(--blue); text-decoration: none; font-weight: 600; }
+  table.lib a:hover { text-decoration: underline; }
+  table.lib .cat { color: var(--muted); white-space: nowrap; }
+  table.lib .why { color: var(--muted); }
+  .scorebar { display: inline-block; width: 64px; height: 7px; border-radius: 4px;
+              background: #21262d; position: relative; margin-right: 6px; top: -1px; }
+  .scorebar i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px;
+                background: linear-gradient(90deg, var(--red), var(--amber) 55%, var(--green)); }
+</style>
+</head>
+<body>
+<header>
+  <h1>Strategy Monitor</h1>
+  <nav class="tabs">
+    <button class="tab active" data-tab="main">Dashboard</button>
+    <button class="tab" data-tab="library">Strategy Library</button>
+  </nav>
+  <span class="sub" id="meta">loading…</span>
+</header>
+<main id="main"></main>
+<main id="library" style="display:none"></main>
+<script>
+const fmt$ = v => v == null ? "—" : (v < 0 ? "-$" : "$") + Math.abs(v).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+const cls = v => v == null ? "" : v >= 0 ? "pos" : "neg";
+const sign = v => v == null ? "—" : (v >= 0 ? "+" : "") + v.toFixed(2);
+
+function curveSVG(curve) {
+  if (!curve || curve.length < 2) return '<div class="empty">No equity history yet.</div>';
+  const W = 520, H = 150, P = 26;
+  const navs = curve.map(c => c.nav);
+  const lo = Math.min(...navs), hi = Math.max(...navs), span = (hi - lo) || 1;
+  const x = i => P + i * (W - 2 * P) / (curve.length - 1);
+  const y = v => H - P - (v - lo) * (H - 2 * P) / span;
+  let path = curve.map((c, i) => (i ? "L" : "M") + x(i).toFixed(1) + "," + y(c.nav).toFixed(1)).join(" ");
+  let dots = curve.map((c, i) =>
+    `<circle cx="${x(i).toFixed(1)}" cy="${y(c.nav).toFixed(1)}" r="3"
+       fill="${c.deposit ? "var(--amber)" : "var(--blue)"}">
+       <title>${c.date}: $${c.nav.toFixed(2)}${c.deposit ? " (deposit +$" + c.deposit + ")" : ""}</title>
+     </circle>`).join("");
+  const labels = `
+    <text x="${P}" y="12" fill="var(--muted)" font-size="10">$${hi.toFixed(2)}</text>
+    <text x="${P}" y="${H - 6}" fill="var(--muted)" font-size="10">$${lo.toFixed(2)}</text>
+    <text x="${W - P}" y="${H - 6}" fill="var(--muted)" font-size="10" text-anchor="end">${curve[curve.length - 1].date}</text>
+    <text x="${P + 60}" y="${H - 6}" fill="var(--muted)" font-size="10">${curve[0].date}</text>`;
+  return `<svg class="curve" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+    <path d="${path}" fill="none" stroke="var(--blue)" stroke-width="2"/>${dots}${labels}
+    </svg>
+    <div class="chip" style="display:inline-block">● blue = NAV &nbsp; ● <span style="color:var(--amber)">amber</span> = deposit day</div>`;
+}
+
+function closedTable(ts, unrecorded) {
+  const warn = (unrecorded || []).map(u =>
+    `<div class="empty" style="color:var(--amber)">⚠ ${u.symbol} (${u.shares}sh @ ${u.entry}) left the account with no ledger record — realized P/L unknown.</div>`).join("");
+  if ((!ts || !ts.length) && !warn) return '<div class="empty">No closed trades yet.</div>';
+  const rows = (ts || []).map(t => `<tr>
+    <td><b>${t.symbol}</b></td>
+    <td>${t.setup ?? "—"}</td>
+    <td class="${t.outcome === "win" ? "pos" : "neg"}">${t.outcome ?? "—"}</td>
+    <td class="num">${t.entry?.toFixed ? t.entry.toFixed(2) : t.entry ?? "—"}</td>
+    <td class="num ${cls(t.realized_pl)}">${fmt$(t.realized_pl)}</td>
+    <td class="num ${cls(t.realized_pct)}">${t.realized_pct != null ? sign(t.realized_pct) + "%" : "—"}</td>
+    <td class="num">${t.hold_days ?? "—"}</td>
+    <td class="ts">${(t.closed_at || "").slice(0, 10)}</td></tr>`).join("");
+  const table = rows ? `<table><tr><th>Sym</th><th>Setup</th><th>Outcome</th>
+    <th class="num">Entry</th><th class="num">Realized P/L</th><th class="num">%</th>
+    <th class="num">Days</th><th>Closed</th></tr>${rows}</table>` : "";
+  return table + warn;
+}
+
+function positionsTable(ps) {
+  if (!ps || !ps.length) return '<div class="empty">No open positions.</div>';
+  const rows = ps.map(p => `<tr>
+    <td><b>${p.symbol}</b></td><td class="num">${p.shares}</td>
+    <td class="num">${p.avg?.toFixed(2) ?? "—"}</td>
+    <td class="num">${p.price?.toFixed(2) ?? "—"}</td>
+    <td class="num ${cls(p.pct)}">${p.pct != null ? sign(p.pct) + "%" : "—"}</td>
+    <td class="num ${cls(p.unrealized_pl)}">${fmt$(p.unrealized_pl)}</td>
+    <td class="num">${p.stop?.toFixed(2) ?? "—"}</td></tr>`).join("");
+  return `<table><tr><th>Sym</th><th class="num">Sh</th><th class="num">Avg</th>
+    <th class="num">Last</th><th class="num">%</th><th class="num">Unrl P/L</th>
+    <th class="num">Stop</th></tr>${rows}</table>`;
+}
+
+function render(data) {
+  document.getElementById("meta").textContent =
+    "updated " + new Date(data.generated_at).toLocaleTimeString() + " · auto-refresh 60s";
+  document.getElementById("main").innerHTML = data.strategies.map(s => {
+    if (s.error) return `<div class="strategy"><div class="strat-head"><h2>${s.name}</h2></div>
+      <div class="error">Adapter error: ${s.error}</div></div>`;
+    const hb = s.heartbeat || {};
+    const stale = hb.age_min == null || hb.age_min > 120;
+    const perf = s.performance || {};
+    const status = s.status?.halted ? '<span class="badge halted">HALTED</span>'
+      : s.status?.live ? '<span class="badge live">LIVE</span>'
+      : '<span class="badge idle">IDLE</span>';
+    const regime = s.regime ? `<span class="badge regime">regime: ${s.regime}</span>` : "";
+    const decisions = Object.entries(s.decision_counts || {}).sort((a, b) => b[1] - a[1])
+      .map(([k, v]) => `<span class="chip">${k} <b>${v}</b></span>`).join("") || '<div class="empty">No journal yet.</div>';
+    const recent = (s.recent || []).map(r =>
+      `<div class="row"><span class="ts">${(r.ts || "").replace("T", " ").slice(0, 16)}</span> ·
+       <span class="ts">${r.run_type}</span><br><span class="dec">${r.decision}</span></div>`).join("")
+      || '<div class="empty">No activity.</div>';
+    const ops = s.ops?.avg_scheduler_reliability_pct != null
+      ? `<span class="chip">scheduler reliability <b>${s.ops.avg_scheduler_reliability_pct}%</b></span>` : "";
+    const st = s.trade_stats || {};
+    const statChips = [
+      st.avg_win != null ? `<span class="chip">avg win <b class="pos">${fmt$(st.avg_win)}</b></span>` : "",
+      st.avg_loss != null ? `<span class="chip">avg loss <b class="neg">${fmt$(st.avg_loss)}</b></span>` : "",
+      st.stops_hit ? `<span class="chip">stops hit <b>${st.stops_hit}</b></span>` : "",
+      ...Object.entries(st.by_setup || {}).map(([k, v]) =>
+        `<span class="chip">${k} <b>${v.trades}</b> · <b class="${cls(v.realized_pl)}">${fmt$(v.realized_pl)}</b></span>`),
+      st.unrecorded_exits ? `<span class="chip" style="color:var(--amber)">unrecorded exits <b>${st.unrecorded_exits}</b></span>` : "",
+    ].join("");
+    return `<div class="strategy">
+      <div class="strat-head"><h2>${s.name}</h2>${status}${regime}
+        <span class="badge idle">${s.broker}</span>
+        <span class="heartbeat ${stale ? "stale" : ""}">
+          ${hb.last_ts ? "last activity " + (hb.age_min != null ? hb.age_min + " min ago" : hb.last_ts) : "no activity recorded"}
+          ${stale && hb.last_ts ? " ⚠ STALE" : ""}</span>
+      </div>
+      <div class="kpis">
+        <div class="kpi"><div class="label">NAV</div><div class="value">${fmt$(s.nav)}</div>
+          <div class="hint">cash ${fmt$(s.cash)}</div></div>
+        <div class="kpi"><div class="label">Campaign P/L${perf.campaign_since ? " (since " + perf.campaign_since + ")" : ""}</div>
+          <div class="value ${cls(perf.campaign_pl)}">${fmt$(perf.campaign_pl)}</div>
+          <div class="hint ${cls(perf.campaign_pct)}">${perf.campaign_pct != null ? sign(perf.campaign_pct) + "%" : ""}</div></div>
+        <div class="kpi"><div class="label">Unrealized P/L</div>
+          <div class="value ${cls(perf.unrealized_pl)}">${fmt$(perf.unrealized_pl)}</div>
+          <div class="hint">${(s.positions || []).length} open positions</div></div>
+        <div class="kpi"><div class="label">Realized P/L</div>
+          <div class="value ${cls(perf.realized_pl)}">${fmt$(perf.realized_pl ?? 0)}</div>
+          <div class="hint">${(s.trade_stats?.trades ?? 0)} closed trade${(s.trade_stats?.trades ?? 0) === 1 ? "" : "s"}${s.trade_stats?.win_rate_pct != null ? " · " + s.trade_stats.win_rate_pct + "% win" : ""}</div></div>
+        <div class="kpi"><div class="label">Net vs deposits</div>
+          <div class="value ${cls(perf.net_pl_vs_deposits)}">${fmt$(perf.net_pl_vs_deposits)}</div>
+          <div class="hint">deposits ${fmt$(perf.total_deposits)}</div></div>
+      </div>
+      <div class="body">
+        <section>
+          <h3>Equity curve</h3>${curveSVG(s.equity_curve)}
+          <h3>Open positions</h3>${positionsTable(s.positions)}
+          <h3>Closed trades</h3>${closedTable(s.closed_trades, s.unrecorded_exits)}
+          <h3>Health</h3><div class="chips">${ops}${statChips}
+            <span class="chip">journal entries <b>${hb.journal_entries ?? 0}</b></span></div>
+        </section>
+        <section>
+          <h3>Decision mix</h3><div class="chips">${decisions}</div>
+          <h3>Recent activity</h3><div class="log">${recent}</div>
+        </section>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+async function refresh() {
+  try {
+    const r = await fetch("/api/summary");
+    render(await r.json());
+  } catch (e) {
+    document.getElementById("meta").textContent = "⚠ fetch failed — server down?";
+  }
+}
+refresh();
+setInterval(refresh, 60000);
+
+// ---- Strategy Library tab ----
+let libData = null, libFilter = null;
+
+function scoreColor(s) { return s >= 65 ? "var(--green)" : s >= 45 ? "var(--amber)" : "var(--red)"; }
+
+function renderLibrary() {
+  const el = document.getElementById("library");
+  if (!libData) { el.innerHTML = '<div class="lib-note">loading…</div>'; return; }
+  const cats = [...new Set(libData.strategies.map(s => s.category))];
+  const rows = libData.strategies
+    .filter(s => !libFilter || s.category === libFilter)
+    .map(s => `<tr>
+      <td class="rk num">${s.rank}</td>
+      <td><a href="/paper.pdf#page=${s.pdf_page}" target="_blank"
+             title="Open description (p. ${s.page} in the paper)">${s.name}</a>
+          <span class="cat"> · §${s.section}</span>
+          ${s.ge ? `<span class="badge live" style="margin-left:6px" title="${s.ge}">G+E</span>` : ""}</td>
+      <td class="cat">${s.category}</td>
+      <td class="num" style="white-space:nowrap"><span class="scorebar"><i style="width:${s.score}%"></i></span><b style="color:${scoreColor(s.score)}">${s.score}</b></td>
+      <td class="why">${s.rationale}</td></tr>`).join("");
+  el.innerHTML = `
+    <div class="lib-note">
+      <b style="color:var(--text)">${libData.source.title}</b> — ${libData.source.authors}
+      (<a href="${libData.source.ssrn}" target="_blank">SSRN 3247865</a>) ·
+      ${libData.count} strategy sections inventoried (the paper's "151 strategies" incl. labeled sub-variants) ·
+      each name links to its description in the paper (local copy).<br>
+      <span style="color:var(--amber)">${libData.regime_note}</span>
+    </div>
+    <div class="filters">
+      <button class="fchip ${!libFilter ? "on" : ""}" data-cat="">All (${libData.count})</button>
+      ${cats.map(c => `<button class="fchip ${libFilter === c ? "on" : ""}" data-cat="${c}">${c}</button>`).join("")}
+    </div>
+    <div class="strategy" style="margin-top:10px"><div class="body" style="display:block">
+      <table class="lib"><tr><th class="num">#</th><th>Strategy</th><th>Asset class</th>
+        <th class="num">Regime fit</th><th>Why this rank now</th></tr>${rows}</table>
+    </div></div>`;
+  el.querySelectorAll(".fchip").forEach(b => b.onclick = () => {
+    libFilter = b.dataset.cat || null; renderLibrary();
+  });
+}
+
+async function loadLibrary() {
+  if (libData) return;
+  try { libData = await (await fetch("/api/library")).json(); }
+  catch (e) { libData = null; }
+  renderLibrary();
+}
+
+document.querySelectorAll(".tab").forEach(t => t.onclick = () => {
+  document.querySelectorAll(".tab").forEach(x => x.classList.toggle("active", x === t));
+  document.getElementById("main").style.display = t.dataset.tab === "main" ? "" : "none";
+  document.getElementById("library").style.display = t.dataset.tab === "library" ? "" : "none";
+  if (t.dataset.tab === "library") loadLibrary();
+});
+</script>
+</body>
+</html>

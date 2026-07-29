@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "strategy-monitor",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["strategy-monitor/server.py"],
+      "port": 8899
+    }
+  ]
+}

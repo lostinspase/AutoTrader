@@ -1,0 +1,15 @@
+state/fmp.env
+state/schwab.env
+state/schwab_tokens.json
+state/control.json
+state/nav_baseline.json
+state/ledger.jsonl
+state/buys_today.json
+state/journal.jsonl
+state/rs_ranks.json
+state/watchlist.json
+state/cache/
+scripts/__pycache__/
+*.pyc
+state/sec.env
+state/insider_signals.json

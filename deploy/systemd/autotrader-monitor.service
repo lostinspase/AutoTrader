@@ -1,0 +1,11 @@
+[Unit]
+Description=AutoTrader strategy monitor on :8899
+After=network-online.target
+
+[Service]
+ExecStart=/usr/bin/python3 %h/projects/AutoTrader/strategy-monitor/server.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target

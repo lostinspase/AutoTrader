@@ -1,0 +1,58 @@
+{
+ "strategies": [
+  {
+   "id": "genesis-exodus-schwab",
+   "name": "Genesis + Exodus (Schwab)",
+   "broker": "Charles Schwab",
+   "adapter": "genesis_exodus_skill",
+   "state_dir": "~/.claude/skills/genesis-exodus-schwab/state",
+   "deposits": [
+    {
+     "date": "2026-07-05",
+     "amount": 300.0
+    },
+    {
+     "date": "2026-07-08",
+     "amount": 300.0
+    },
+    {
+     "date": "2026-07-20",
+     "amount": 438.45
+    }
+   ],
+   "trading_baseline": {
+    "date": "2026-07-08",
+    "nav": 561.55
+   },
+   "notes": "LIVE full-auto. Baseline = first fully-funded flat day (all cash, no positions). Top-up $438.45 landed 2026-07-20 (recorded same day)."
+  },
+  {
+   "id": "project-ark",
+   "name": "Project Ark (Robinhood)",
+   "broker": "Robinhood",
+   "adapter": "genesis_exodus_skill",
+   "state_dir": "~/.claude/skills/project-ark/state",
+   "deposits": [
+    {
+     "date": "2026-07-20",
+     "amount": 1000.0
+    }
+   ],
+   "trading_baseline": {
+    "date": "2026-07-24",
+    "nav": 1000.0
+   },
+   "notes": "FUNDED $1,000 (Robinhood 451480438) 2026-07-20; skill BUILT 2026-07-20; initial allocation scheduled 2026-07-21 10:00 ET; monthly rebalance day-1-4 gate + Friday weekly check registered. Baseline to be set at initial allocation."
+  },
+  {
+   "id": "project-babel",
+   "name": "Project Babel (Schwab, dedicated acct)",
+   "broker": "Charles Schwab",
+   "adapter": "genesis_exodus_skill",
+   "state_dir": "~/.claude/skills/project-babel/state",
+   "deposits": [],
+   "trading_baseline": null,
+   "notes": "Approved $1,000. Gated 3x leveraged rotation (v2, daily breaker). Blocked on scheduler hardening + new account."
+  }
+ ]
+}
