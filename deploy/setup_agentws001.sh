@@ -19,7 +19,7 @@ mkdir -p "$HOME/projects"
 if [ ! -d "$REPO_DIR/.git" ]; then
   git clone git@github.com:lostinspase/AutoTrader.git "$REPO_DIR"
 else
-  git -C "$REPO_DIR" pull --ff-only
+  git -C "$REPO_DIR" pull --ff-only || echo "!! git pull failed (no GitHub auth on server yet) — using rsynced tree as-is"
 fi
 
 # 2. timezone must be Eastern (crons are written in ET)
