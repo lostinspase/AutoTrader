@@ -116,7 +116,12 @@ def _consecutive_loss_halt():
     if not rows:
         return False, 0
     window = rows[-CONSEC_LOSS_WINDOW:]
-    stops = [r for r in window if r.get("outcome") == "stop"]
+    # A "stop" only counts toward the breaker if it LOST money — a ratcheted
+    # trailing stop that exits above entry is a win by P/L regardless of the
+    # exit mechanism, and must never trip the loss breaker (hardened 2026-07-30
+    # after the first profitable stop-out raised the question).
+    stops = [r for r in window
+             if r.get("outcome") == "stop" and float(r.get("realized_pl") or 0) < 0]
     n_stops = len(stops)
     if n_stops < CONSEC_LOSS_TRIGGER:
         return False, n_stops
