@@ -28,6 +28,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 HERE = os.path.dirname(os.path.abspath(__file__))
 STATE = os.path.join(os.path.dirname(HERE), "state")
 PORT = 8090
+BIND = os.environ.get("AUTOTRADER_BIND", "127.0.0.1")
 CACHE_TTL = 20  # seconds
 NTFY_TOPIC = "autotrader-jp-303f1edb"  # scheduler-stall push alerts (ntfy.sh; subscribe in the ntfy app)
 
@@ -480,8 +481,8 @@ class Handler(BaseHTTPRequestHandler):
 
 def main():
     threading.Thread(target=_refresher, daemon=True).start()
-    srv = ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
-    print(f"Genesis dashboard: http://127.0.0.1:{PORT} (background refresher on)", flush=True)
+    srv = ThreadingHTTPServer((BIND, PORT), Handler)
+    print(f"Genesis dashboard: http://{BIND}:{PORT} (background refresher on)", flush=True)
     srv.serve_forever()
 
 

@@ -63,6 +63,6 @@ class Handler(BaseHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    server = ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
+    server = ThreadingHTTPServer((os.environ.get("AUTOTRADER_BIND", "127.0.0.1"), PORT), Handler)
     print(f"Strategy Monitor: http://127.0.0.1:{PORT}")
     server.serve_forever()
