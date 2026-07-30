@@ -29,6 +29,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 STATE = os.path.join(os.path.dirname(HERE), "state")
 PORT = 8090
 CACHE_TTL = 20  # seconds
+NTFY_TOPIC = "autotrader-jp-303f1edb"  # scheduler-stall push alerts (ntfy.sh; subscribe in the ntfy app)
 
 sys.path.insert(0, HERE)
 import fmp  # noqa: E402  (profiles/news; daily-cached where marked)
@@ -197,6 +198,14 @@ def snapshot():
                         "stale": stale}
         global _stale_notified
         if stale and not _stale_notified:
+            try:
+                subprocess.run(["curl", "-s", "-m", "10",
+                                "-H", "Title: AutoTrader scheduler stalled",
+                                "-H", "Priority: high",
+                                "-d", f"No scheduled run journaled in {round(age_min or 0)} min during market hours.",
+                                f"https://ntfy.sh/{NTFY_TOPIC}"], capture_output=True, timeout=15)
+            except Exception:
+                pass
             subprocess.run(["osascript", "-e",
                             'display notification "No scheduled run journaled in '
                             + str(round(age_min or 0)) + ' min during market hours — check Routines" '
