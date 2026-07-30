@@ -198,7 +198,13 @@ def snapshot():
                         "last_run_age_min": round(age_min) if age_min is not None else None,
                         "stale": stale}
         global _stale_notified
-        if stale and not _stale_notified:
+        # latch FIRST — a notification failure must never cause a re-notify storm.
+        # _stale_notified holds the epoch of the last alert; re-notify at most every
+        # 2h while an episode persists; reset when the scheduler recovers.
+        now_ts = time.time()
+        already = isinstance(_stale_notified, float) and (now_ts - _stale_notified) < 7200
+        if stale and not already:
+            _stale_notified = now_ts
             try:
                 subprocess.run(["curl", "-s", "-m", "10",
                                 "-H", "Title: AutoTrader scheduler stalled",
@@ -207,12 +213,14 @@ def snapshot():
                                 f"https://ntfy.sh/{NTFY_TOPIC}"], capture_output=True, timeout=15)
             except Exception:
                 pass
-            subprocess.run(["osascript", "-e",
+            try:
+                _osa = subprocess.run(["osascript", "-e",
                             'display notification "No scheduled run journaled in '
                             + str(round(age_min or 0)) + ' min during market hours — check Routines" '
                             'with title "⚠️ Genesis scheduler stalled"'],
                            capture_output=True, timeout=10)
-            _stale_notified = True
+            except Exception:
+                pass  # osascript absent on Linux — ntfy already sent, latch already set
         elif not stale:
             _stale_notified = False
     except Exception:
