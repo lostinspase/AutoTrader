@@ -164,7 +164,7 @@ function render(data) {
     if (s.error) return `<div class="strategy"><div class="strat-head"><h2>${s.name}</h2></div>
       <div class="error">Adapter error: ${s.error}</div></div>`;
     const hb = s.heartbeat || {};
-    const stale = hb.age_min == null || hb.age_min > 120;
+    const stale = hb.age_min == null || hb.age_min > (hb.stale_min ?? 120);
     const perf = s.performance || {};
     const status = s.status?.halted ? '<span class="badge halted">HALTED</span>'
       : s.status?.live ? '<span class="badge live">LIVE</span>'

@@ -270,6 +270,7 @@ def genesis_exodus_skill_adapter(cfg):
         "heartbeat": {
             "last_ts": _entry_ts(last) if last else None,
             "age_min": age_min,
+            "stale_min": cfg.get("stale_min", 120),
             "journal_entries": len(journal),
         },
         "nav": nav,

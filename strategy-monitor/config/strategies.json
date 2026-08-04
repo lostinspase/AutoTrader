@@ -6,6 +6,7 @@
    "broker": "Charles Schwab",
    "adapter": "genesis_exodus_skill",
    "state_dir": "~/.claude/skills/genesis-exodus-schwab/state",
+   "stale_min": 120,
    "deposits": [
     {
      "date": "2026-07-05",
@@ -32,6 +33,7 @@
    "broker": "Robinhood",
    "adapter": "genesis_exodus_skill",
    "state_dir": "~/.claude/skills/project-ark/state",
+   "stale_min": 10440,
    "deposits": [
     {
      "date": "2026-07-20",
