@@ -56,7 +56,22 @@ import urllib.error
 HERE = os.path.dirname(os.path.abspath(__file__))
 STATE = os.path.join(os.path.dirname(HERE), "state")
 ENV_FILE = os.path.join(STATE, "schwab.env")
+# Schwab issues ONE refresh token per app (7-day hard clock, rotates on some refreshes).
+# Every skill using this app MUST read/write the SAME token file, or one skill's refresh
+# silently invalidates the other's copy. SCHWAB_TOKENS_FILE in schwab.env points Babel at
+# the Genesis token store; the ACCOUNT whitelist stays per-skill and is never shared.
 TOKENS_FILE = os.path.join(STATE, "schwab_tokens.json")
+_tok_override = None
+try:
+    with open(ENV_FILE) as _f:
+        for _line in _f:
+            _line = _line.strip()
+            if _line.startswith("SCHWAB_TOKENS_FILE="):
+                _tok_override = os.path.expanduser(_line.split("=", 1)[1].strip())
+except OSError:
+    pass
+if _tok_override:
+    TOKENS_FILE = _tok_override
 
 TOKEN_URL = "https://api.schwabapi.com/v1/oauth/token"
 AUTH_URL = "https://api.schwabapi.com/v1/oauth/authorize"
@@ -400,10 +415,11 @@ def _is_err(x):
 
 
 # ---- account resolution (the whitelist guard) --------------------------------
-# Genesis's account is pinned IN CODE as well as in schwab.env. The env value alone is a
-# single point of failure: Babel's account (…5301) is linked to the same Schwab app, so a
-# stray edit would otherwise let this scanner spend Babel's cash. Both must agree.
-GENESIS_ACCOUNT = "41343393"
+# Babel's account is pinned IN CODE as well as in schwab.env. The env value alone is a
+# single point of failure: a typo or a stray edit pointing at Genesis's account (…3393)
+# would be silently accepted, since that account IS linked to the same Schwab app.
+# Both must agree or nothing trades.
+BABEL_ACCOUNT = "20425301"
 
 
 def _account_hash():
@@ -413,10 +429,9 @@ def _account_hash():
     if not want or want.startswith("<"):
         _err("SCHWAB_TRADING_ACCOUNT not set — refusing to trade without an explicit "
              "account whitelist")
-    if want != GENESIS_ACCOUNT:
-        _err(f"account mismatch: schwab.env says {want} but this is the Genesis+Exodus "
-             f"skill, pinned to {GENESIS_ACCOUNT}. Refusing to act on another "
-             f"strategy's account.")
+    if want != BABEL_ACCOUNT:
+        _err(f"account mismatch: schwab.env says {want} but this is the Babel skill, "
+             f"pinned to {BABEL_ACCOUNT}. Refusing to act on another strategy's account.")
     mapping = _api("GET", TRADER_BASE, "/accounts/accountNumbers")
     if _is_err(mapping):
         _err(f"could not fetch account numbers: {mapping}")

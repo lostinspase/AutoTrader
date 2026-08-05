@@ -52,9 +52,18 @@
    "broker": "Charles Schwab",
    "adapter": "genesis_exodus_skill",
    "state_dir": "~/.claude/skills/project-babel/state",
-   "deposits": [],
-   "trading_baseline": null,
-   "notes": "Approved $1,000. Gated 3x leveraged rotation (v2, daily breaker). Blocked on scheduler hardening + new account."
+   "stale_min": 5760,
+   "deposits": [
+    {
+     "date": "2026-07-20",
+     "amount": 1000.0
+    }
+   ],
+   "trading_baseline": {
+    "date": "2026-08-05",
+    "nav": 1000.0
+   },
+   "notes": "LIVE 2026-08-05. Gated 3x leveraged rotation (v2: weekly ladder + daily breaker), Schwab 20425301. Scheduler gate passed 2026-08-04 (5-day avg 92.2%, no zero days). ~50% drawdown is pre-accepted by design — do NOT halt on drawdown alone. Daily heartbeat cadence (breaker runs every market day)."
   }
  ]
 }
