@@ -19,8 +19,9 @@ CLAUDE=/home/jploude/.local/bin/claude
 # Ark weekly trend check — Fridays 10:05 ET
 5 10 * * 5        cat $REPO/deploy/tasks/ark-weekly-check.md | $CLAUDE -p           >> /home/jploude/autotrader-logs/ark.log 2>&1
 
-# Project Babel weekly ladder — Mondays 9:45a ET. The ONLY job that may ADD exposure.
-45 9 * * 1        cat $REPO/deploy/tasks/babel-weekly-ladder.md | $CLAUDE -p        >> /home/jploude/autotrader-logs/babel.log 2>&1
+# Project Babel weekly ladder — Mondays 9:47a ET. The ONLY job that may ADD exposure.
+# :47 not :45 — Genesis's hourly scan owns :45 and both spawn a Claude process.
+47 9 * * 1        cat $REPO/deploy/tasks/babel-weekly-ladder.md | $CLAUDE -p        >> /home/jploude/autotrader-logs/babel.log 2>&1
 
 # Project Babel daily breaker — EXIT-ONLY de-lever, 9:50a ET, Mon–Fri.
 # A missed run is Babel's core tail risk; the watchdog must stay green.

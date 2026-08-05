@@ -14,7 +14,15 @@ GATES (stop and report if any fail):
 2. `python3 ~/.claude/skills/project-babel/scripts/schwab.py positions` — current holdings + balances. Use **cashBalance (settled cash)** for sizing. THIS IS A MARGIN ACCOUNT: ignore buyingPower entirely; never let total invested exceed NAV (liquidationValue). Never short, no options.
 3. Compare current holdings to target_weights. If already at the target state (same symbols, each within 5% of NAV of target) -> NO ORDERS, journal "already at target".
 4. Otherwise: **SELLS FIRST** (frees cash), then buys. WHOLE shares only — round DOWN, never up. Residual cash is expected (~3% at 3x, ~10% at 1x/cash) and is correct; do not add a share to close the gap.
-5. For EVERY order: `schwab.py preview-order` first (build with `schwab.py build-order SYMBOL BUY|SELL QTY MARKET`); any warning -> skip that order, log, alert. Then place, then confirm the fill via `schwab.py orders filled` before relying on freed cash (FILL TRUTH).
+5. For EVERY order, in this exact form (verified 2026-08-05):
+   ```
+   ORDER=$(python3 ~/.claude/skills/project-babel/scripts/schwab.py build-order \
+       --symbol TQQQ --side BUY --qty 4 --type MARKET)
+   python3 ~/.claude/skills/project-babel/scripts/schwab.py preview-order "$ORDER"
+   python3 ~/.claude/skills/project-babel/scripts/schwab.py place-order "$ORDER"
+   ```
+   Preview must return `"status": "ACCEPTED"` and an `orderBalance.projectedAvailableFund` >= 0; any warning, rejection, or negative projected funds -> SKIP that order, log, alert. Then confirm the fill via `schwab.py orders --status FILLED` before relying on freed cash (FILL TRUTH).
+   NOTE: `projectedIntradayBuyingPower` may show negative on this margin account — that is a margin metric and is EXPECTED; judge affordability by settled cash and projectedAvailableFund only.
 6. JOURNAL (always, even no-trade): append ONE JSON line to `~/.claude/skills/project-babel/state/journal.jsonl` with "ts" (ISO-8601 WITH local offset), "run_type": "weekly_ladder", "tier", "leader", "nav" (liquidationValue as a NUMBER), "cash", "target_weights", "orders", "fills", "decision", AND "positions": ALL current holdings as {"symbol","shares","avg","price"} — the strategy monitor reads this field. Also append the decision line to `~/.claude/skills/project-babel/state/babel_history.jsonl`.
 7. OUTPUT: max 5 lines — tier, leader, orders placed, fills, ending exposure.
 
