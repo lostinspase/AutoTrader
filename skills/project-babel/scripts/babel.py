@@ -203,19 +203,66 @@ def cmd_target():
     print(json.dumps(out, indent=1))
 
 
-def cmd_daily_check():
-    """Read the last target to learn what tier/leader we hold, then de-lever test."""
-    held_tier, held_leader = 0, None
+def _held_from_broker():
+    """FILL TRUTH: what the ACCOUNT actually holds, not what we intended to hold.
+
+    babel_target.json records INTENT; if an order was skipped, rejected, or partially
+    filled, intent and reality diverge and a breaker driven by intent would try to sell
+    a position that does not exist. The broker is the authority. Returns
+    (tier, leader, source) and falls back to the target file ONLY if the broker is
+    unreachable — in which case the caller must treat the result as degraded.
+    """
     try:
-        with open(TARGET_FILE) as f:
-            last = json.load(f)
-        held_tier = last.get("governor", {}).get("tier", 0)
-        held_leader = last.get("selector", {}).get("leader")
-    except (FileNotFoundError, json.JSONDecodeError):
-        pass
+        import subprocess
+        r = subprocess.run(
+            [sys.executable, os.path.join(HERE, "schwab.py"), "positions"],
+            capture_output=True, text=True, timeout=60)
+        data = json.loads(r.stdout)
+        if "error" in data:
+            raise RuntimeError(data.get("detail", data["error"]))
+        letf_shares = {}
+        for p in data.get("positions", []):
+            sym = (p.get("instrument", {}) or {}).get("symbol", "")
+            qty = float(p.get("longQuantity") or 0)
+            if qty > 0:
+                letf_shares[sym] = qty
+        # Which leveraged vehicle (if any) is actually held?
+        for leader, vehicle in LETF.items():
+            if letf_shares.get(vehicle, 0) > 0:
+                nav = float((data.get("balances") or {}).get("liquidationValue") or 0)
+                # 3x tier holds ~100% in the LETF; 1x tier holds ~1/3. Classify by weight
+                # so a de-lever sells whatever is actually there either way.
+                return (3, leader, "broker") if nav <= 0 else (
+                    (3 if letf_shares[vehicle] * _last_px(vehicle) / nav > 0.6 else 1),
+                    leader, "broker")
+        return 0, None, "broker"          # no leveraged position -> nothing to de-lever
+    except Exception as e:                # broker unreachable / auth error / timeout
+        held_tier, held_leader = 0, None
+        try:
+            with open(TARGET_FILE) as f:
+                last = json.load(f)
+            held_tier = last.get("governor", {}).get("tier", 0)
+            held_leader = last.get("selector", {}).get("leader")
+        except (FileNotFoundError, json.JSONDecodeError):
+            pass
+        return held_tier, held_leader, f"target_file_fallback ({e})"
+
+
+def _last_px(sym):
+    """Latest close for a held LETF, used only to classify 3x vs 1x by weight."""
+    s = daily_series(sym, days=10)
+    return s[-1][1] if s else 0.0
+
+
+def cmd_daily_check():
+    """De-lever test against what the BROKER says we hold (fill truth)."""
+    held_tier, held_leader, source = _held_from_broker()
     out = compute(daily_breaker_only=True, current_tier=held_tier,
                   current_leader=held_leader)
-    out["held"] = {"tier": held_tier, "leader": held_leader}
+    out["held"] = {"tier": held_tier, "leader": held_leader, "source": source}
+    if source.startswith("target_file_fallback"):
+        out["degraded"] = ("could not read broker positions — held state inferred from "
+                           "babel_target.json. Verify positions before ANY order.")
     print(json.dumps(out, indent=1))
 
 

@@ -10,9 +10,11 @@ GATES (stop and report if any fail):
 - Kill switch: `python3 ~/.claude/skills/project-babel/scripts/ops.py status` — halted=true -> report only.
 - Schwab token: ACCOUNT_ACCESS_ERROR -> STOP, no orders, report (re-auth is human-only).
 
-1. `python3 ~/.claude/skills/project-babel/scripts/babel.py daily-check` — deterministic. It reads the last target to learn the held tier/leader, then tests ONLY that leader for a breach (price < 200-DMA OR 20d vol > 35%). Output has "de_lever": true|false. If it returns "error" -> NO TRADE, journal, report.
+1. `python3 ~/.claude/skills/project-babel/scripts/babel.py daily-check` — deterministic. It reads the ACTUAL held position from the broker (fill truth), then tests ONLY that leader for a breach (price < 200-DMA OR 20d vol > 35%). Output has "de_lever": true|false and "held": {tier, leader, source}.
+   - If `held.source` is NOT "broker" (i.e. a `degraded` key is present) -> the broker was unreachable and held-state was guessed from a file. **NO ORDERS.** Journal the degraded state and report.
+   - If it returns "error" -> NO TRADE, journal, report.
 2. If `de_lever` is **false** -> NO ORDERS. Journal and stop. (This is the normal outcome most days.)
-3. If `de_lever` is **true**: `schwab.py positions`, then SELL the FULL leveraged position (TQQQ or UPRO — whole shares, the entire holding), in this exact form (verified 2026-08-05):
+3. If `de_lever` is **true**: `schwab.py positions` and CONFIRM the leveraged position actually exists with the share count you are about to sell — never sell a quantity the engine inferred but the broker does not report. Then SELL the FULL leveraged position (TQQQ or UPRO — whole shares, the entire holding), in this exact form (verified 2026-08-05):
    ```
    ORDER=$(python3 ~/.claude/skills/project-babel/scripts/schwab.py build-order \
        --symbol TQQQ --side SELL --qty <ALL held shares> --type MARKET)
