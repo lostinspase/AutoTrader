@@ -27,8 +27,14 @@ CLAUDE=/home/jploude/.local/bin/claude
 # A missed run is Babel's core tail risk; the watchdog must stay green.
 50 9 * * 1-5      cat $REPO/deploy/tasks/babel-daily-breaker.md | $CLAUDE -p        >> /home/jploude/autotrader-logs/babel.log 2>&1
 
-# Schwab token watchdog — daily 7:00 ET
+# Schwab token watchdog — daily 7:00 ET (narrative summary in the log)
 0 7 * * *         cat $REPO/deploy/tasks/schwab-token-watchdog.md | $CLAUDE -p      >> /home/jploude/autotrader-logs/watchdog.log 2>&1
+
+# Escalating token PUSH alerts — 7:05a / 1:05p / 8:05p ET, deterministic (no LLM).
+# The LLM watchdog above warned correctly before both lapses but only ever wrote to
+# a log file; these are the alerts that actually reach a phone. Silent >3 days out,
+# then default -> high -> urgent, repeating every run inside 1 day and after expiry.
+5 7,13,20 * * *   python3 $REPO/skills/genesis-exodus-schwab/scripts/token_alert.py >> /home/jploude/autotrader-logs/token_alert.log 2>&1
 
 # Weekly scorecard — Mondays 5:30 ET
 30 5 * * 1        cat $REPO/deploy/tasks/genesis-weekly-scorecard.md | $CLAUDE -p   >> /home/jploude/autotrader-logs/scorecard.log 2>&1

@@ -8,7 +8,7 @@ Daily Schwab token watchdog for the Genesis+Exodus Schwab trading system. Single
 PROCEDURE:
 1. Run: python3 ~/.claude/skills/genesis-exodus-schwab/scripts/schwab.py token-status
 2. Interpret the JSON:
-   - If reauth_required=true or authenticated=false: output a LOUD alert — "🔴 SCHWAB TOKEN EXPIRED — the trading system CANNOT read the account or trade until you re-authenticate. Run: python3 ~/.claude/skills/genesis-exodus-schwab/scripts/schwab.py reauth   (opens browser; log in, click through the localhost certificate warning, done in ~30 seconds)."
-   - Else if refresh_days_remaining < 2.5: output "🟡 SCHWAB RE-AUTH DUE SOON — <X> days left (deadline <reauth_by>). Run: python3 ~/.claude/skills/genesis-exodus-schwab/scripts/schwab.py reauth — takes ~30 seconds. If it lapses, the scanner safe-fails (no trades, no monitoring) until you re-auth."
+   - If reauth_required=true or authenticated=false: output a LOUD alert — "🔴 SCHWAB TOKEN EXPIRED — the trading system CANNOT read the account or trade until you re-authenticate. Re-auth requires the LONG-WINDOW LISTENER flow — ask Claude to start it. On Linux `schwab.py reauth` does NOT open a browser (it prints the URL), its built-in window is only 5 minutes, and pasting the redirect URL back into chat CANNOT work (Schwab codes expire in ~30s). Keep `ssh -L 8182:127.0.0.1:8182 jploude@100.69.244.45` open, then log in and click through the cert warning to 'Authentication captured'."
+   - Else if refresh_days_remaining < 2.5: output "🟡 SCHWAB RE-AUTH DUE SOON — <X> days left (deadline <reauth_by>). Ask Claude to start the long-window re-auth listener (see the expired-case note above). If it lapses, Genesis safe-fails (no trades, no monitoring) and Babel's daily breaker goes degraded until you re-auth."
    - Else: output one line only: "Schwab token OK — <X> days until re-auth (<reauth_by>)."
 3. Nothing else. Never print tokens, keys, or secrets.
