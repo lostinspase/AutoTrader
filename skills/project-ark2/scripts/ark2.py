@@ -2,28 +2,31 @@
 """
 Project ARK2 — thematic sleeve. Same deterministic engine as Ark, different universe.
 
-WHY A SEPARATE SLEEVE INSTEAD OF ADDING SMH/XLE TO ARK: inside one engine the
-thematic ETFs merely COMPETE with VOO/VEA for the same 4 slots, displacing the
-diversified base rather than adding to it. Run as its own engine, ARK2's returns
-are nearly UNCORRELATED with Ark's (0.055, and stable at +0.064/-0.068/+0.130
-across three sub-periods), so a 50/50 blend produces:
+WHY A SEPARATE SLEEVE INSTEAD OF ADDING THE THEMATIC ETFs TO ARK: inside one engine
+they merely COMPETE with VOO/VEA for the same 4 slots, displacing the diversified
+base rather than adding to it. Run as its own engine, ARK2's returns are nearly
+UNCORRELATED with Ark's (0.037, stable at +0.004/-0.064/+0.144 across three
+sub-periods), so a 50/50 blend produces:
     Ark(10) alone   CAGR  7.32%  maxDD -12.7%  Sharpe 0.70
-    Ark(12) folded  CAGR  9.01%  maxDD -12.9%  Sharpe 0.80
-    ARK2 alone      CAGR 11.77%  maxDD -18.7%  Sharpe 0.91
-    50/50 blend     CAGR  9.74%  maxDD -10.4%  Sharpe 1.12   <- higher return AND
-                                                                shallower drawdown
-Gauntlet: backtests/ark2_gauntlet.py, 6/6 (walk-forward 3/3, correlation stability
-3/3, jitter 4/4, universe perturbation 6/6, drawdown guard, equal-capital fairness).
+    Ark(12) folded  CAGR  9.01%  maxDD -12.9%  Sharpe 0.80  <- built then reverted
+    ARK2 alone      CAGR 11.76%  maxDD -13.3%  Sharpe 0.90
+    50/50 blend     CAGR  9.75%  maxDD  -9.9%  Sharpe 1.12  <- higher return AND
+                                                               shallower drawdown
+Gauntlet: backtests/ark2_schwab_gauntlet.py, 6/6 (walk-forward 3/3, correlation
+stability 3/3, jitter 4/4, universe perturbation 6/6, drawdown guard, equal-capital
+fairness). Figures above are the SCHWAB-tradeable config; the earlier all-Robinhood
+run (SMH/GLD, ark2_gauntlet.py) also passed 6/6 but is superseded.
 
-THE PERTURBATION RESULT MATTERS MOST: dropping SMH entirely STILL beat Ark(10)
-alone. The edge comes from having a second uncorrelated sleeve, not from
+THE PERTURBATION RESULT MATTERS MOST: dropping the semis leg entirely STILL beat
+Ark(10) alone. The edge comes from having a second uncorrelated sleeve, not from
 semiconductors specifically. Do not treat the exact tickers as sacred.
 
-CAVEATS: constituents were chosen in 2026 knowing semis/energy led this cycle, and
+CAVEATS: constituents chosen in 2026 knowing semis/energy led this cycle, and
 a 4-asset/2-slot universe is inherently more fragile than Ark's 12-asset one.
-Expect a smaller live edge. STANDALONE this sleeve is volatile: -18.7% maxDD and
+Expect a smaller live edge. STANDALONE this sleeve is volatile: -13.3% maxDD and
 ~36% losing months. It will be red while Ark is green -- that is the mechanism
-working, not a malfunction.
+working, not a malfunction. SOXQ itself only lists from 2021, so its LIVE history is
+short even though its index exposure is not.
 
 Engine (identical to ark.py):
   FLOODGATE  crash override (SPY AND TLT < 10-mo SMA -> 100% SGOV); absolute momentum
@@ -32,7 +35,7 @@ Engine (identical to ark.py):
   ROTATE     top 2 by blended 3/6/12-mo momentum, inverse-vol weights, 60% class cap
 
 The engine only COMPUTES targets — it never places orders. The scheduled task
-translates targets into Robinhood fractional notional orders.
+translates targets into SCHWAB WHOLE-SHARE orders (no fractional on Schwab).
 
 CLI:
   targets            compute + persist state/ark2_targets.json, print summary
@@ -52,15 +55,25 @@ sys.path.insert(0, HERE)
 import fmp  # noqa: E402
 
 # symbol -> asset class. TLT is REQUIRED (the FLOODGATE crash override reads it)
-# and doubles as a defensive destination; GLD gives the trend gate somewhere to go
-# that is not equity beta. SMH/XLE are the thematic engine.
-# TESTED ALTERNATIVES (all still beat Ark(10) alone in the blend): drop_GLD 0.93,
-# drop_XLE 1.08, drop_SMH 0.82, swap SMH->XLK 1.18, add_IEF 1.14. As-designed 1.12.
+# and doubles as a defensive destination; gold gives the trend gate somewhere to go
+# that is not equity beta. Semis/energy are the thematic engine.
+#
+# TICKERS CHOSEN FOR WHOLE-SHARE SIZING. Schwab has NO fractional equity orders, so
+# at a $1k NAV a 35% weight must buy at least a few shares or the leg silently
+# vanishes. Measured 2026-08-16: SMH $588 / SOXX $550 / GLD $401 all buy ZERO shares
+# at 35% of $1k. SOXQ ($98) and GLDM ($87) size cleanly.
+# The BACKTEST uses long-history proxies (SOXX for SOXQ, GLD for GLDM) because SOXQ
+# only lists from 2021; proxy fidelity verified on the shared window:
+#   SOXQ~SOXX corr 0.993 | SOXQ~SMH 0.986 | GLDM~GLD 0.9991
+# NOTE SMH ran ~5%/yr HOTTER than SOXX/SOXQ over that window, so backtesting on SMH
+# would OVERSTATE this sleeve. The 6/6 gauntlet was rerun on SOXX for that reason.
+# TESTED ALTERNATIVES (all still beat Ark(10) alone in the blend): drop_gold 0.93,
+# drop_energy 1.08, drop_semis 0.82, swap semis->XLK 1.18, add_IEF 1.15.
 UNIVERSE = {
-    "SMH": "semis",
+    "SOXQ": "semis",
     "XLE": "energy",
     "TLT": "treasuries",
-    "GLD": "gold",
+    "GLDM": "gold",
 }
 CASH = "SGOV"
 BENCH = "SPY"
@@ -185,7 +198,7 @@ def compute():
         "signals": signals,
         "target_weights": {**{s: round(v, 4) for s, v in weights.items()},
                            CASH: cash_w},
-        "note": "weights are fractions of Ark NAV; translate to Robinhood notional orders",
+        "note": "weights are fractions of ARK2 NAV; translate to Schwab WHOLE-SHARE orders (round DOWN)",
     }
     return out
 

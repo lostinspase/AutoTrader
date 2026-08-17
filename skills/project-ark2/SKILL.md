@@ -2,43 +2,59 @@
 name: project-ark2
 description: >-
   Project ARK2 — thematic sleeve (strategy #4). Same deterministic Ark engine, a
-  concentrated 4-ETF universe (SMH/XLE/TLT/GLD, top 2 held). Designed to run
-  ALONGSIDE Ark, not inside it: sleeve correlation ~0.055 means a 50/50 blend has a
+  concentrated 4-ETF universe (SOXQ/XLE/TLT/GLDM, top 2 held). Designed to run
+  ALONGSIDE Ark, not inside it: sleeve correlation ~0.04 means a 50/50 blend has a
   higher Sharpe (1.12 vs 0.80) and shallower drawdown than folding the same ETFs
-  into Ark. Monthly rebalance + weekly trend check. Kill switch in state/control.json.
+  into Ark. Monthly rebalance + weekly trend check on SCHWAB (whole shares). Kill switch in state/control.json.
 ---
 
-# Project ARK2 — Thematic Sleeve (Robinhood)
+# Project ARK2 — Thematic Sleeve (Schwab)
 
-Strategy #4. Backtest 2008–2026: **11.77% CAGR, −18.7% maxDD standalone**; blended
-50/50 with Ark: **9.74% CAGR, −10.4% maxDD, Sharpe 1.12**. Gauntlet 6/6
-(`backtests/ark2_gauntlet.py`).
+Strategy #4. Backtest 2008–2026 (on the SOXX/GLD long-history proxies): **11.76%
+CAGR, −13.3% maxDD standalone**; blended 50/50 with Ark: **9.75% CAGR, −9.9% maxDD,
+Sharpe 1.12** vs Ark alone at 0.70. Gauntlet 6/6
+(`backtests/ark2_schwab_gauntlet.py` — the Schwab-tradeable config; the earlier
+`ark2_gauntlet.py` tested the Robinhood SMH/GLD version and is superseded).
 
-**This sleeve is volatile on its own — −18.7% drawdown, ~36% losing months.** It is
+**This sleeve is volatile on its own — −13.3% drawdown, ~36% losing months.** It is
 built to be red while Ark is green; that anti-correlation IS the product. Judge it
 blended with Ark, never in isolation.
 
 ## ⚠️ ACCOUNT — NOT YET ASSIGNED (BLOCKING)
-ARK2 has **no account yet**. As of 2026-08-16 the only agentic-enabled Robinhood
-account is **451480438**, which Project Ark owns. ARK2 must NOT share it — two
-engines writing targets to one account will fight over the same dollars, exactly the
-reason Babel got its own Schwab account.
+ARK2 trades on **SCHWAB**, not Robinhood. Robinhood permits only one agentic account
+per login and has no agentic sub-accounts, and Project Ark owns that one (451480438);
+two engines writing targets to one account would fight over the same dollars. Schwab
+already proves the alternative — Genesis (…3393) and Babel (…5301) run independently
+under a single OAuth grant, each pinned to its own account.
 
-Before this skill goes live a human must either (a) enable agentic trading on a
-second Robinhood account, or (b) open one. Then set the account number here and in
-the task prompts, and register it in the monitor.
-**Until an account is assigned: compute-only. NEVER place an order.**
+**Before this skill can trade, a human must:**
+1. Open a THIRD Schwab brokerage account.
+2. Re-auth Schwab so the new account enters the OAuth grant (the account list only
+   refreshes on re-auth — this is how Babel's account first appeared).
+3. Set the real number in BOTH `scripts/schwab.py` (`ARK2_ACCOUNT`, currently the
+   `<UNASSIGNED>` placeholder) and `state/schwab.env` (`SCHWAB_TRADING_ACCOUNT`).
+   They must match or every call fails closed — that is the guard, not a nuisance.
+4. Write the two task prompts, add crons, fund ~$1,000, set `halted: false`.
+
+**Until then: compute-only. The engine computes targets fine; every broker call
+refuses.** Do NOT point this skill at …3393 or …5301.
 
 ## THE ENGINE IS THE AUTHORITY
 `python3 scripts/ark2.py targets` computes everything. The agent NEVER overrides,
 re-scores, or improvises weights. Engine error (data fragility) -> NO REBALANCE,
 report, keep current holdings.
 
-UNIVERSE = SMH (semis), XLE (energy), TLT (treasuries), GLD (gold); **top 2 held**.
-TLT is required — the FLOODGATE crash override reads it — and doubles as the
-defensive destination alongside GLD. The gauntlet's perturbation test showed the
-edge survives dropping any single constituent (dropping SMH entirely still beat Ark
-alone), so **the exact tickers are not sacred**; the second uncorrelated sleeve is.
+UNIVERSE = **SOXQ** (semis), **XLE** (energy), **TLT** (treasuries), **GLDM** (gold);
+**top 2 held**. TLT is required — the FLOODGATE crash override reads it — and doubles
+as the defensive destination alongside GLDM. The gauntlet's perturbation test showed
+the edge survives dropping any single constituent (dropping semis entirely still beat
+Ark alone), so **the exact tickers are not sacred**; the second uncorrelated sleeve is.
+
+TICKERS ARE CHOSEN FOR WHOLE-SHARE SIZING, not preference. Schwab has no fractional
+equity orders, and at $1k NAV a 35% weight in SMH ($588), SOXX ($550) or GLD ($401)
+buys ZERO shares — the leg would silently vanish. SOXQ ($98) and GLDM ($87) size
+cleanly. The backtest runs on long-history proxies (SOXX→SOXQ, GLD→GLDM; fidelity
+0.993 and 0.9991) because SOXQ only lists from 2021.
 
 ## CADENCE
 - **Monthly rebalance** — first TRADING day of the month, ~10:10 ET (staggered off
@@ -46,17 +62,22 @@ alone), so **the exact tickers are not sacred**; the second uncorrelated sleeve 
 - **Weekly check** — Fridays ~10:15 ET: `ark2.py weekly-check`; any flagged holding
   (>3% below its 10-mo SMA) is SOLD to SGOV. Sells only — never buys mid-month.
 
-## ORDER MECHANICS (Robinhood MCP)
-1. `get_portfolio` — NAV + settled cash. Cash truth: spend only settled funds.
-2. Dollar targets = weight × NAV from `state/ark2_targets.json`.
-3. DRIFT BAND: trade only legs differing by >2% of NAV; always trade new entries and
-   full exits.
-4. SELLS FIRST, then buys. Fractional NOTIONAL orders (Robinhood supports these;
-   Schwab does not — this sleeve is Robinhood-only for that reason).
-5. `review_equity_order` before EVERY placement; warning -> skip that order, log, alert.
-6. FILL TRUTH: confirm each fill via `get_equity_orders` before relying on freed cash.
-7. NO margin, NO shorting, NO options. Cap total invested at 100% — never borrow.
-8. SGOV weight is implemented by BUYING SGOV (it is the cash seat, not idle cash).
+## ORDER MECHANICS (Schwab)
+1. `python3 scripts/ops.py status` — halted -> monitoring only, no orders.
+2. `python3 scripts/schwab.py positions` — cash truth + current holdings.
+3. Dollar targets = weight × NAV from `state/ark2_targets.json`.
+4. **WHOLE SHARES ONLY — round DOWN, never up.** Residual cash is expected (~15% at
+   $1k) and is the SAFE error; never add a share to close the gap.
+5. A **SGOV leg that rounds to 0 shares is fine** — leave it as literal cash. Cash and
+   SGOV are economically equivalent here; do not force a purchase to satisfy the target.
+6. Size against **SETTLED CASH**, never buying power. NO margin, NO shorting, NO options.
+7. SELLS FIRST, then buys. `schwab.py preview-order` before EVERY placement (build with
+   `schwab.py build-order --symbol X --side BUY --qty N --type MARKET`); preview must
+   return `"status": "ACCEPTED"` — any warning -> skip that order, log, alert.
+8. FILL TRUTH: confirm each fill via `schwab.py orders --status FILLED` before relying
+   on freed cash.
+9. DRIFT BAND: skip a leg already within 5% of NAV of target (whole-share granularity
+   on ~$1k makes finer targeting meaningless churn).
 
 ## REBALANCING AGAINST ARK
 The 1.12 Sharpe assumes the two sleeves are periodically rebalanced back toward

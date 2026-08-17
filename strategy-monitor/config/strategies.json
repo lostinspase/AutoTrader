@@ -49,13 +49,13 @@
   {
    "id": "project-ark2",
    "name": "Project ARK2 (thematic sleeve)",
-   "broker": "Robinhood",
+   "broker": "Charles Schwab",
    "adapter": "genesis_exodus_skill",
    "state_dir": "~/.claude/skills/project-ark2/state",
    "stale_min": 10440,
    "deposits": [],
    "trading_baseline": null,
-   "notes": "BUILT 2026-08-16, HALTED pending an account. Gauntlet 6/6: standalone 11.77% CAGR / -18.7% maxDD; blended 50/50 with Ark 9.74% CAGR / -10.4% maxDD / Sharpe 1.12 (vs 0.80 folding SMH+XLE into Ark). Universe SMH/XLE/TLT/GLD, top 2. BLOCKING: needs a second agentic-enabled Robinhood account — Ark owns 451480438 and the two engines must never share it. Judge blended with Ark, never standalone."
+   "notes": "BUILT 2026-08-16, HALTED pending a THIRD Schwab account. Converted from Robinhood to Schwab because Robinhood allows only one agentic account per login (Ark owns 451480438) and has no agentic sub-accounts. Universe SOXQ/XLE/TLT/GLDM (top 2) \u2014 tickers picked so whole-share orders size at $1k, since Schwab has no fractional equities. Gauntlet 6/6 on the Schwab config: standalone 11.76% CAGR / -13.3% maxDD; blended 50/50 with Ark 9.75% CAGR / -9.9% maxDD / Sharpe 1.12 (vs 0.80 folding into Ark, 0.70 Ark alone). Sleeve correlation 0.037. Judge blended with Ark, never standalone."
   },
   {
    "id": "project-babel",
@@ -74,7 +74,7 @@
     "date": "2026-08-05",
     "nav": 1000.0
    },
-   "notes": "LIVE 2026-08-05. Gated 3x leveraged rotation (v2: weekly ladder + daily breaker), Schwab 20425301. Scheduler gate passed 2026-08-04 (5-day avg 92.2%, no zero days). ~50% drawdown is pre-accepted by design — do NOT halt on drawdown alone. Daily heartbeat cadence (breaker runs every market day)."
+   "notes": "LIVE 2026-08-05. Gated 3x leveraged rotation (v2: weekly ladder + daily breaker), Schwab 20425301. Scheduler gate passed 2026-08-04 (5-day avg 92.2%, no zero days). ~50% drawdown is pre-accepted by design \u2014 do NOT halt on drawdown alone. Daily heartbeat cadence (breaker runs every market day)."
   }
  ]
 }
