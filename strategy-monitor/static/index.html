@@ -37,6 +37,13 @@
                 letter-spacing: .5px; }
   .kpi .value { font-size: 20px; font-weight: 650; margin-top: 2px; font-variant-numeric: tabular-nums; }
   .kpi .hint { font-size: 11px; color: var(--muted); }
+  .daily-toggle { display: inline-flex; align-items: center; gap: 4px; margin-left: 16px; }
+  .daily-toggle .dt-label { font-size: 11px; color: var(--muted); text-transform: uppercase;
+    letter-spacing: .04em; margin-right: 2px; }
+  .daily-toggle button { background: var(--panel2); color: var(--muted); border: 1px solid transparent;
+    border-radius: 4px; padding: 2px 9px; font-size: 12px; cursor: pointer; font-family: inherit; }
+  .daily-toggle button:hover { color: var(--fg); }
+  .daily-toggle button.active { background: var(--accent, #2d6cdf); color: #fff; }
   .pos { color: var(--green); } .neg { color: var(--red); }
   .body { display: grid; grid-template-columns: 1.15fr 1fr; gap: 18px; padding: 16px 18px; }
   @media (max-width: 900px) { .body { grid-template-columns: 1fr; } }
@@ -91,6 +98,12 @@
     <button class="tab active" data-tab="main">Dashboard</button>
     <button class="tab" data-tab="library">Strategy Library</button>
   </nav>
+  <span class="daily-toggle" id="dailyToggle">
+    <span class="dt-label">Daily P/L</span>
+    <button data-mode="usd">$</button>
+    <button data-mode="pct">%</button>
+    <button data-mode="both">both</button>
+  </span>
   <span class="sub" id="meta">loading…</span>
 </header>
 <main id="main"></main>
@@ -98,6 +111,32 @@
 <script>
 const fmt$ = v => v == null ? "—" : (v < 0 ? "-$" : "$") + Math.abs(v).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
 const cls = v => v == null ? "" : v >= 0 ? "pos" : "neg";
+
+// Daily P/L display mode: "usd" | "pct" | "both". Persisted so a 60s auto-refresh
+// (or a reload) does not silently reset the user's choice.
+let dailyMode = localStorage.getItem("dailyMode") || "usd";
+function setDailyMode(m) {
+  dailyMode = m;
+  localStorage.setItem("dailyMode", m);
+  if (window._lastData) render(window._lastData);
+}
+function dailyValue(p) {
+  if (p.daily_pl == null) return "—";
+  const d = fmt$(p.daily_pl), pc = (p.daily_pct != null ? sign(p.daily_pct) + "%" : "—");
+  if (dailyMode === "pct") return pc;
+  if (dailyMode === "both") return `${d} <span style="font-size:14px;opacity:.75">(${pc})</span>`;
+  return d;
+}
+function dailyHint(p) {
+  if (p.daily_pl == null) return "needs 2 days of NAV";
+  const parts = [];
+  if (dailyMode === "usd" && p.daily_pct != null) parts.push(sign(p.daily_pct) + "%");
+  if (dailyMode === "pct") parts.push(fmt$(p.daily_pl));
+  if (p.daily_from) parts.push("vs " + p.daily_from);
+  // A deposit inflates raw NAV change; say so rather than showing phantom profit.
+  if (p.daily_deposit_adj) parts.push("excl. deposit " + fmt$(p.daily_deposit_adj));
+  return parts.join(" · ");
+}
 const sign = v => v == null ? "—" : (v >= 0 ? "+" : "") + v.toFixed(2);
 
 function curveSVG(curve) {
@@ -158,6 +197,9 @@ function positionsTable(ps) {
 }
 
 function render(data) {
+  window._lastData = data;          // so the $/%/both toggle can re-render instantly
+  document.querySelectorAll("#dailyToggle button").forEach(
+    b => b.classList.toggle("active", b.dataset.mode === dailyMode));
   document.getElementById("meta").textContent =
     "updated " + new Date(data.generated_at).toLocaleTimeString() + " · auto-refresh 60s";
   document.getElementById("main").innerHTML = data.strategies.map(s => {
@@ -197,6 +239,9 @@ function render(data) {
       <div class="kpis">
         <div class="kpi"><div class="label">NAV</div><div class="value">${fmt$(s.nav)}</div>
           <div class="hint">cash ${fmt$(s.cash)}</div></div>
+        <div class="kpi"><div class="label">Daily P/L${perf.daily_to ? " (" + perf.daily_to + ")" : ""}</div>
+          <div class="value ${cls(perf.daily_pl)}">${dailyValue(perf)}</div>
+          <div class="hint">${dailyHint(perf)}</div></div>
         <div class="kpi"><div class="label">Campaign P/L${perf.campaign_since ? " (since " + perf.campaign_since + ")" : ""}</div>
           <div class="value ${cls(perf.campaign_pl)}">${fmt$(perf.campaign_pl)}</div>
           <div class="hint ${cls(perf.campaign_pct)}">${perf.campaign_pct != null ? sign(perf.campaign_pct) + "%" : ""}</div></div>
@@ -285,6 +330,9 @@ async function loadLibrary() {
   catch (e) { libData = null; }
   renderLibrary();
 }
+
+document.querySelectorAll("#dailyToggle button").forEach(
+  b => b.onclick = () => setDailyMode(b.dataset.mode));
 
 document.querySelectorAll(".tab").forEach(t => t.onclick = () => {
   document.querySelectorAll(".tab").forEach(x => x.classList.toggle("active", x === t));

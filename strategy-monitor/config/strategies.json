@@ -18,14 +18,15 @@
     },
     {
      "date": "2026-07-20",
-     "amount": 438.45
+     "amount": 400.0,
+     "note": "transferred $438.45, but $38.45 settled a pre-existing negative balance \u2014 only $400.00 became working capital for the strategy"
     }
    ],
    "trading_baseline": {
     "date": "2026-07-08",
     "nav": 561.55
    },
-   "notes": "LIVE full-auto. Baseline = first fully-funded flat day (all cash, no positions). Top-up $438.45 landed 2026-07-20 (recorded same day)."
+   "notes": "LIVE full-auto. Baseline = first fully-funded flat day (all cash, no positions). Deposits total $1,000.00: the 2026-07-20 top-up was a $438.45 transfer of which $38.45 settled a pre-existing negative balance, so only $400.00 is strategy capital. Do NOT restore 438.45 \u2014 it overstates deposits and understates net P/L."
   },
   {
    "id": "project-ark",

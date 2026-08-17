@@ -145,9 +145,21 @@ def genesis_exodus_skill_adapter(cfg):
     deposits = cfg.get("deposits", [])
     dep_by_date = {d["date"]: d["amount"] for d in deposits}
     total_deposits = sum(d["amount"] for d in deposits)
+    # nav_baseline.json is written by Genesis's quick-check (28 runs/day). The
+    # monthly/weekly strategies (Ark, ARK2, Babel) never create it, so their curve
+    # would be empty and Daily P/L would read "—" forever. Fall back to the NAV each
+    # run already journals: last entry of each day wins.
+    daily_nav = dict(nav_series)
+    for entry in journal:
+        ts = _entry_ts(entry)
+        v = _num(entry.get("nav"))
+        if ts and v:
+            day = str(ts)[:10]
+            if len(day) == 10 and day not in nav_series:
+                daily_nav[day] = v
     curve = [
         {"date": d, "nav": v, "deposit": dep_by_date.get(d, 0)}
-        for d, v in sorted(nav_series.items())
+        for d, v in sorted(daily_nav.items())
     ]
     if nav is None and curve:
         nav = curve[-1]["nav"]
@@ -169,6 +181,24 @@ def genesis_exodus_skill_adapter(cfg):
         round(sum(p["unrealized_pl"] for p in positions if p["unrealized_pl"] is not None), 2)
         if positions else 0
     )
+
+    # --- daily change, DEPOSIT-AWARE ---------------------------------------
+    # A deposit raises NAV without being profit. Subtract any deposit landing on
+    # the later day, or a $438 transfer reads as a +$438 gain — the same mistake
+    # the campaign P/L calc had to fix.
+    if len(curve) >= 2:
+        prev, last = curve[-2], curve[-1]
+        dep = last.get("deposit") or 0
+        chg = last["nav"] - prev["nav"] - dep
+        base = prev["nav"] + dep
+        perf["daily_pl"] = round(chg, 2)
+        perf["daily_pct"] = round(chg / base * 100, 2) if base else None
+        perf["daily_from"] = prev["date"]
+        perf["daily_to"] = last["date"]
+        perf["daily_deposit_adj"] = dep or None
+    else:
+        perf["daily_pl"] = None
+        perf["daily_pct"] = None
 
     # --- entries log (buys) -------------------------------------------------
     entries = []
