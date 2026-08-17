@@ -420,11 +420,11 @@ def _is_err(x):
 # otherwise be silently accepted, since BOTH are linked to the same Schwab app.
 # Both must agree or nothing trades.
 #
-# NOT YET ASSIGNED. The third Schwab account did not exist when this was written, so
-# the pin is a placeholder that CANNOT match any real account — every trading call
-# fails closed until a human sets the real number here AND in state/schwab.env.
-# Read-only commands fail too; that is intentional (no half-configured trading).
-ARK2_ACCOUNT = "<UNASSIGNED>"
+# Assigned 2026-08-17: the third Schwab account (CASH type, funded $1,000), read
+# straight from /accounts after the re-auth that added it to the OAuth grant — not
+# transcribed by hand. Genesis is …3393 and Babel is …5301; all three are linked to
+# the same app, which is exactly why this pin exists.
+ARK2_ACCOUNT = "95762912"
 
 
 def _account_hash():

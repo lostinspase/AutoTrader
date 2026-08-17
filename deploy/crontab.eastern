@@ -19,6 +19,13 @@ CLAUDE=/home/jploude/.local/bin/claude
 # Ark weekly trend check — Fridays 10:05 ET
 5 10 * * 5        cat $REPO/deploy/tasks/ark-weekly-check.md | $CLAUDE -p           >> /home/jploude/autotrader-logs/ark.log 2>&1
 
+# ARK2 monthly rebalance — 10:10 ET days 1–4 (first-trading-day gate inside the prompt).
+# :10 not :00 — Ark owns 10:00 and both spawn a Claude process.
+10 10 1-4 * *     cat $REPO/deploy/tasks/ark2-monthly-rebalance.md | $CLAUDE -p     >> /home/jploude/autotrader-logs/ark2.log 2>&1
+
+# ARK2 weekly trend check — Fridays 10:15 ET (Ark's is 10:05).
+15 10 * * 5       cat $REPO/deploy/tasks/ark2-weekly-check.md | $CLAUDE -p          >> /home/jploude/autotrader-logs/ark2.log 2>&1
+
 # Project Babel weekly ladder — Mondays 9:47a ET. The ONLY job that may ADD exposure.
 # :47 not :45 — Genesis's hourly scan owns :45 and both spawn a Claude process.
 47 9 * * 1        cat $REPO/deploy/tasks/babel-weekly-ladder.md | $CLAUDE -p        >> /home/jploude/autotrader-logs/babel.log 2>&1
