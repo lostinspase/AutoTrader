@@ -29,6 +29,7 @@ UNIVERSE = {  # symbol -> asset class
     "VEA": "intl_equity", "VWO": "intl_equity",
     "TLT": "treasuries", "IEF": "treasuries",
     "LQD": "credit", "GLD": "gold", "DBC": "commodities", "VNQ": "reits",
+    "SMH": "semis", "XLE": "energy",
 }
 CASH = "BIL"
 BENCH = "SPY"

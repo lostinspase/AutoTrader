@@ -31,11 +31,24 @@ sys.path.insert(0, HERE)
 import fmp  # noqa: E402
 
 # symbol -> asset class (class cap 40%)
+# SMH + XLE added 2026-08-16 after the universe gauntlet passed 5/5
+# (backtests/ark_universe_gauntlet.py): +1.69 CAGR (7.32 -> 9.01), maxDD
+# essentially unchanged (-12.67 -> -12.91), Sharpe 0.70 -> 0.80, better in 13 of
+# 19 years and in 4/4 cap/top_n settings and 4/4 start dates.
+# They are given their OWN asset classes deliberately: as "us_equity" the 40%
+# class cap would force them to compete with VOO/IJR, which cut the gain to
+# +0.68. They also do different jobs — SMH adds return but raises correlation to
+# SPY (0.445 -> 0.510); XLE lowers it (-> 0.432) and turned 2022 from -3.9% to
+# +0.1%. Together correlation lands at 0.485, barely above the original.
+# CAVEAT: both were chosen in 2026 knowing semis/energy led this cycle, and the
+# walk-forward gain concentrates in fold 3 (2020-2026, the AI boom). Expect a
+# smaller live edge than backtested; the trend gate can and should reject them.
 UNIVERSE = {
     "VOO": "us_equity", "IJR": "us_equity",
     "VEA": "intl_equity", "VWO": "intl_equity",
     "TLT": "treasuries", "VGIT": "treasuries",
     "LQD": "credit", "GLDM": "gold", "DBC": "commodities", "VNQ": "reits",
+    "SMH": "semis", "XLE": "energy",
 }
 CASH = "SGOV"
 BENCH = "SPY"

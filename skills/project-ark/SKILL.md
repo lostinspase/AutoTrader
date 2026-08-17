@@ -22,6 +22,12 @@ account. NEVER touch Schwab accounts (Genesis owns …3393, Babel owns …5301).
 validated backtest). The agent NEVER overrides, re-scores, or improvises weights. If the
 engine returns an error (data fragility) -> NO REBALANCE, report, keep current holdings.
 
+UNIVERSE = 12 ETFs. SMH (semis) and XLE (energy) were added 2026-08-16 after a 5/5
+universe gauntlet (backtests/ark_universe_gauntlet.py): CAGR 7.32 -> 9.01, maxDD
+-12.67 -> -12.91, Sharpe 0.70 -> 0.80. They hold their own asset classes so the 40%
+cap does not make them compete with VOO/IJR. Expect a smaller live edge than
+backtested — both were picked in 2026 knowing semis/energy led this cycle.
+
 ## CADENCE
 - **Monthly rebalance** — first TRADING day of the month, ~10:00 ET (fractional orders
   are regular-hours only). Task fires days 1–4; execute only if today is the month's
