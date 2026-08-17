@@ -47,6 +47,17 @@
    "notes": "FUNDED $1,000 (Robinhood 451480438) 2026-07-20; skill BUILT 2026-07-20; initial allocation scheduled 2026-07-21 10:00 ET; monthly rebalance day-1-4 gate + Friday weekly check registered. Baseline to be set at initial allocation."
   },
   {
+   "id": "project-ark2",
+   "name": "Project ARK2 (thematic sleeve)",
+   "broker": "Robinhood",
+   "adapter": "genesis_exodus_skill",
+   "state_dir": "~/.claude/skills/project-ark2/state",
+   "stale_min": 10440,
+   "deposits": [],
+   "trading_baseline": null,
+   "notes": "BUILT 2026-08-16, HALTED pending an account. Gauntlet 6/6: standalone 11.77% CAGR / -18.7% maxDD; blended 50/50 with Ark 9.74% CAGR / -10.4% maxDD / Sharpe 1.12 (vs 0.80 folding SMH+XLE into Ark). Universe SMH/XLE/TLT/GLD, top 2. BLOCKING: needs a second agentic-enabled Robinhood account — Ark owns 451480438 and the two engines must never share it. Judge blended with Ark, never standalone."
+  },
+  {
    "id": "project-babel",
    "name": "Project Babel (Schwab, dedicated acct)",
    "broker": "Charles Schwab",

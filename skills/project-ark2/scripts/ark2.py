@@ -1,20 +1,41 @@
 #!/usr/bin/env python3
 """
-Project Ark — deterministic signal engine (multi-asset trend + dual-momentum rotation).
+Project ARK2 — thematic sleeve. Same deterministic engine as Ark, different universe.
 
-Mirrors backtests/ark_backtest.py EXACTLY (validated 2008-2026: 7.3% CAGR, -12.7% maxDD):
+WHY A SEPARATE SLEEVE INSTEAD OF ADDING SMH/XLE TO ARK: inside one engine the
+thematic ETFs merely COMPETE with VOO/VEA for the same 4 slots, displacing the
+diversified base rather than adding to it. Run as its own engine, ARK2's returns
+are nearly UNCORRELATED with Ark's (0.055, and stable at +0.064/-0.068/+0.130
+across three sub-periods), so a 50/50 blend produces:
+    Ark(10) alone   CAGR  7.32%  maxDD -12.7%  Sharpe 0.70
+    Ark(12) folded  CAGR  9.01%  maxDD -12.9%  Sharpe 0.80
+    ARK2 alone      CAGR 11.77%  maxDD -18.7%  Sharpe 0.91
+    50/50 blend     CAGR  9.74%  maxDD -10.4%  Sharpe 1.12   <- higher return AND
+                                                                shallower drawdown
+Gauntlet: backtests/ark2_gauntlet.py, 6/6 (walk-forward 3/3, correlation stability
+3/3, jitter 4/4, universe perturbation 6/6, drawdown guard, equal-capital fairness).
+
+THE PERTURBATION RESULT MATTERS MOST: dropping SMH entirely STILL beat Ark(10)
+alone. The edge comes from having a second uncorrelated sleeve, not from
+semiconductors specifically. Do not treat the exact tickers as sacred.
+
+CAVEATS: constituents were chosen in 2026 knowing semis/energy led this cycle, and
+a 4-asset/2-slot universe is inherently more fragile than Ark's 12-asset one.
+Expect a smaller live edge. STANDALONE this sleeve is volatile: -18.7% maxDD and
+~36% losing months. It will be red while Ark is green -- that is the mechanism
+working, not a malfunction.
+
+Engine (identical to ark.py):
   FLOODGATE  crash override (SPY AND TLT < 10-mo SMA -> 100% SGOV); absolute momentum
              vs SGOV; 10% vol target on trailing 6 realized monthly portfolio returns
   TREND      eligible = month-end price > 10-month SMA AND 12-1 momentum > 0
-  ROTATE     top 4 by blended 3/6/12-mo momentum, inverse-vol (12 monthly rets) weights
-             scaled by filled/4, 40% class cap, residual -> SGOV
+  ROTATE     top 2 by blended 3/6/12-mo momentum, inverse-vol weights, 60% class cap
 
-All monthly math uses MONTH-END closes of COMPLETED months (dividend-adjusted, FMP).
-The engine only COMPUTES targets — it never places orders. The scheduled task translates
-targets into Robinhood fractional notional orders (account 451480438 ONLY).
+The engine only COMPUTES targets — it never places orders. The scheduled task
+translates targets into Robinhood fractional notional orders.
 
 CLI:
-  targets            compute + persist state/ark_targets.json, print summary
+  targets            compute + persist state/ark2_targets.json, print summary
   weekly-check       mid-month exit test: flag holdings >3% below their 10-mo SMA
   history            show recorded monthly portfolio returns (vol-target input)
 """
@@ -30,34 +51,33 @@ STATE = os.path.join(os.path.dirname(HERE), "state")
 sys.path.insert(0, HERE)
 import fmp  # noqa: E402
 
-# symbol -> asset class (class cap 40%)
-# NOTE: SMH + XLE were briefly folded in here on 2026-08-16 and REVERTED the same
-# day. Folding passed its gauntlet (Sharpe 0.70 -> 0.80) but a SEPARATE thematic
-# sleeve tested strictly better: ARK2 as its own engine gives sleeve correlation
-# ~0.055 and a 50/50 blend Sharpe of 1.12 vs 0.80 folded, with SHALLOWER drawdown
-# (-10.4% vs -12.9%). Inside one engine SMH/XLE merely COMPETE with VOO/VEA for
-# 4 slots — they displace the diversified base instead of adding to it.
-# See skills/project-ark2/ and backtests/ark2_gauntlet.py (6/6).
-# DO NOT re-add SMH/XLE here while ARK2 is live: that double-counts the theme.
+# symbol -> asset class. TLT is REQUIRED (the FLOODGATE crash override reads it)
+# and doubles as a defensive destination; GLD gives the trend gate somewhere to go
+# that is not equity beta. SMH/XLE are the thematic engine.
+# TESTED ALTERNATIVES (all still beat Ark(10) alone in the blend): drop_GLD 0.93,
+# drop_XLE 1.08, drop_SMH 0.82, swap SMH->XLK 1.18, add_IEF 1.14. As-designed 1.12.
 UNIVERSE = {
-    "VOO": "us_equity", "IJR": "us_equity",
-    "VEA": "intl_equity", "VWO": "intl_equity",
-    "TLT": "treasuries", "VGIT": "treasuries",
-    "LQD": "credit", "GLDM": "gold", "DBC": "commodities", "VNQ": "reits",
+    "SMH": "semis",
+    "XLE": "energy",
+    "TLT": "treasuries",
+    "GLD": "gold",
 }
 CASH = "SGOV"
 BENCH = "SPY"
-TOP_N = 4
-CLASS_CAP = 0.40
+# Concentrated by design: 2 slots from a 4-asset universe. CLASS_CAP is effectively
+# inert here (every asset is its own class) but is kept at the tested 0.60 so the
+# engine code stays byte-identical to Ark's.
+TOP_N = 2
+CLASS_CAP = 0.60
 VOL_TARGET = 0.10
-TARGETS_FILE = os.path.join(STATE, "ark_targets.json")
-HISTORY_FILE = os.path.join(STATE, "ark_history.json")
+TARGETS_FILE = os.path.join(STATE, "ark2_targets.json")
+HISTORY_FILE = os.path.join(STATE, "ark2_history.json")
 
 
 def month_end_series(sym):
     """{'YYYY-MM': last close of that month} from FMP daily bars (adjusted)."""
     d = fmp._get("historical-price-eod/full", {"symbol": sym, "limit": 500},
-                 cache_key=f"ark:{sym}")
+                 cache_key=f"ark2:{sym}")
     rows = d if isinstance(d, list) else []
     rows = sorted(rows, key=lambda r: r.get("date", ""))
     me = {}
@@ -188,7 +208,7 @@ def cmd_weekly_check():
         with open(TARGETS_FILE) as f:
             targets = json.load(f)
     except (FileNotFoundError, json.JSONDecodeError):
-        print(json.dumps({"error": "no ark_targets.json — run targets first"}))
+        print(json.dumps({"error": "no ark2_targets.json — run targets first"}))
         return
     held = [s for s, w in targets.get("target_weights", {}).items()
             if s in UNIVERSE and w > 0]
