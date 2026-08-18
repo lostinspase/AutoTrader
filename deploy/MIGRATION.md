@@ -57,3 +57,18 @@ Verify: `schwab.py token-status` must show 7.0 days.
   candidates) so history follows the system.
 - Strategy monitor `state_dir` paths use `~/.claude/skills/...` — resolved via the
   symlinks the setup script creates; no config edits needed.
+
+## Post-cutover gotcha: the Mac's dashboard keeps alerting (fixed 2026-08-18)
+Disabling the Mac's *scheduled tasks* at cutover does NOT stop
+`com.genesis.dashboard` — a separate LaunchAgent running dashboard_server.py. That
+server has its own missed-run watchdog which reads the MAC's journal, frozen at
+cutover. It therefore sees days of silence during market hours and pushes
+"AutoTrader scheduler stalled" to the SAME ntfy topic as the server, every 2 hours,
+looking identical to a real alert. Symptom: stall alerts while the server is
+demonstrably running fine.
+
+Fix: `launchctl unload ~/Library/LaunchAgents/com.genesis.dashboard.plist`
+Verify: no `dashboard_server` in `ps aux`, nothing on :8090 locally, and the SERVER
+reports `scheduler_health.stale == false` at `curl http://127.0.0.1:8090/data`.
+(Note the JSON key is `scheduler_health`, not `sched_health`.)
+Re-check this any time the Mac is used as a fallback and then stood down again.
