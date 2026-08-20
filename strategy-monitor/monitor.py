@@ -11,6 +11,7 @@ any strategy the same way.
 
 import json
 import os
+import time
 import datetime as dt
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -111,6 +112,43 @@ def _num(v):
     except (TypeError, ValueError):
         return None
 
+def _live_quotes(symbols):
+    """Current prices for a set of symbols, or {} if anything goes wrong.
+
+    WHY THIS EXISTS: the monitor is otherwise a pure journal reader — NAV and
+    position prices are whatever the strategy last WROTE. Ark journals twice a
+    month, so between runs its dashboard showed prices up to two weeks stale (and
+    Genesis journaled price=0 for some rows). Marking to market here makes the
+    monitor a live view without touching any trading engine.
+
+    This is READ-ONLY market data. It never contacts a broker and never trades.
+    Failure is non-fatal: on any error we fall back to journaled values.
+    """
+    syms = sorted({s for s in symbols if s})
+    if not syms:
+        return {}
+    out = {}
+    try:
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(
+            "fmp_mtm", os.path.expanduser(
+                "~/.claude/skills/genesis-exodus-schwab/scripts/fmp.py"))
+        fmp = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(fmp)
+    except Exception:
+        return {}
+    for sym in syms:
+        try:
+            # cache_key varies per minute so quotes stay fresh without hammering FMP
+            r = fmp._get("quote-short", {"symbol": sym},
+                         cache_key=f"mtm:{sym}:{int(time.time() // 300)}")
+            if isinstance(r, list) and r and r[0].get("price"):
+                out[sym] = float(r[0]["price"])
+        except Exception:
+            continue
+    return out
+
+
 def genesis_exodus_skill_adapter(cfg):
     state = os.path.expanduser(cfg["state_dir"])
     journal = _read_jsonl(os.path.join(state, "journal.jsonl"))
@@ -140,6 +178,36 @@ def genesis_exodus_skill_adapter(cfg):
             regime = entry.get("regime")
         if nav is not None and positions and regime is not None:
             break
+
+    # --- MARK TO MARKET -----------------------------------------------------
+    # Journaled prices are as-of the strategy's last run. Ark runs twice a month,
+    # so between runs the dashboard showed prices up to two weeks old; some Genesis
+    # rows journaled price=0 outright. Re-price every held symbol from live quotes
+    # and rebuild NAV as cash + sum(shares * live price). Read-only market data.
+    mark_to_market = {"applied": False}
+    if positions:
+        live = _live_quotes([p["symbol"] for p in positions])
+        if live:
+            repriced, mkt_val = 0, 0.0
+            for p in positions:
+                lp = live.get(p["symbol"])
+                if lp:
+                    p["journaled_price"] = p.get("price")
+                    p["price"] = lp
+                    p["live"] = True
+                    repriced += 1
+                    if p.get("avg") and p.get("shares"):
+                        p["unrealized_pl"] = round((lp - p["avg"]) * p["shares"], 2)
+                        p["pct"] = round((lp / p["avg"] - 1) * 100, 2) if p["avg"] else None
+                if p.get("price") and p.get("shares"):
+                    mkt_val += p["price"] * p["shares"]
+            # Rebuild NAV only if we have a cash figure; otherwise NAV would drop
+            # the uninvested balance and understate the account.
+            if cash is not None and repriced:
+                nav = round(mkt_val + cash, 2)
+            mark_to_market = {"applied": bool(repriced), "repriced": repriced,
+                              "of": len(positions),
+                              "at": dt.datetime.now().astimezone().isoformat(timespec="seconds")}
 
     # --- equity curve, deposit-aware ---------------------------------------
     deposits = cfg.get("deposits", [])
@@ -297,6 +365,7 @@ def genesis_exodus_skill_adapter(cfg):
             "halted": bool(control.get("halted")),
             "halt_reason": control.get("halt_reason"),
         },
+        "mark_to_market": mark_to_market,
         "heartbeat": {
             "last_ts": _entry_ts(last) if last else None,
             "age_min": age_min,

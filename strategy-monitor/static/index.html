@@ -37,6 +37,7 @@
                 letter-spacing: .5px; }
   .kpi .value { font-size: 20px; font-weight: 650; margin-top: 2px; font-variant-numeric: tabular-nums; }
   .kpi .hint { font-size: 11px; color: var(--muted); }
+  .badge.mtm { background: #1d3b2a; color: #7fdca4; }
   .daily-toggle { display: inline-flex; align-items: center; gap: 4px; margin-left: 16px; }
   .daily-toggle .dt-label { font-size: 11px; color: var(--muted); text-transform: uppercase;
     letter-spacing: .04em; margin-right: 2px; }
@@ -120,6 +121,15 @@ function setDailyMode(m) {
   localStorage.setItem("dailyMode", m);
   if (window._lastData) render(window._lastData);
 }
+// Prices shown are marked to market by the monitor, not read from the last strategy
+// run. Say so explicitly — a stale price that LOOKS live is worse than no price.
+function mtmBadge(s) {
+  const m = s.mark_to_market || {};
+  if (!m.applied) return "";
+  const t = m.at ? new Date(m.at).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"}) : "";
+  return ` <span class="badge mtm" title="Position prices re-quoted live by the monitor (${m.repriced}/${m.of} symbols); NAV = cash + market value">live px ${t}</span>`;
+}
+
 function dailyValue(p) {
   if (p.daily_pl == null) return "—";
   const d = fmt$(p.daily_pl), pc = (p.daily_pct != null ? sign(p.daily_pct) + "%" : "—");
@@ -231,7 +241,7 @@ function render(data) {
     ].join("");
     return `<div class="strategy">
       <div class="strat-head"><h2>${s.name}</h2>${status}${regime}
-        <span class="badge idle">${s.broker}</span>
+        <span class="badge idle">${s.broker}</span>${mtmBadge(s)}
         <span class="heartbeat ${stale ? "stale" : ""}">
           ${hb.last_ts ? "last activity " + (hb.age_min != null ? hb.age_min + " min ago" : hb.last_ts) : "no activity recorded"}
           ${stale && hb.last_ts ? " ⚠ STALE" : ""}</span>
