@@ -149,6 +149,60 @@ def _live_quotes(symbols):
     return out
 
 
+# Monitor-owned NAV history. The strategies journal a NAV only when they RUN --
+# Ark twice a month -- so an equity curve built from journals barely moves and
+# "Daily P/L" compares Aug 14 to Aug 21. This records a marked-to-market NAV per
+# day so the curve and the daily change track the market instead of the schedule.
+#
+# WRITTEN ONCE PER DAY, AFTER THE CLOSE. Recording intraday would make the daily
+# change jitter with every page refresh and would leave the last row as a partial
+# day. Before 16:00 ET the current value is exposed separately as an INTRADAY
+# figure, never written to history.
+NAV_HISTORY_FILE = "monitor_nav_history.json"
+_ET_TZ = None
+
+
+def _et_now():
+    global _ET_TZ
+    if _ET_TZ is None:
+        try:
+            from zoneinfo import ZoneInfo
+            _ET_TZ = ZoneInfo("America/New_York")
+        except Exception:
+            _ET_TZ = dt.timezone(dt.timedelta(hours=-4))
+    return dt.datetime.now(_ET_TZ)
+
+
+def _record_nav(state_dir, nav, marked):
+    """Append today's settled NAV once the session has closed.
+
+    Returns (history_dict, intraday_or_None). Never raises: a read-only dashboard
+    must not break because a state dir is unwritable.
+    """
+    path = os.path.join(state_dir, NAV_HISTORY_FILE)
+    hist = _read_json(path, {}) or {}
+    if nav is None:
+        return hist, None
+    now = _et_now()
+    today = now.strftime("%Y-%m-%d")
+    weekday = now.weekday() < 5
+    closed = (now.hour, now.minute) >= (16, 0)
+
+    # Only settled, marked values become history. An unmarked NAV is just the last
+    # journaled figure and would pin the curve flat on a stale number.
+    if weekday and closed and marked and today not in hist:
+        hist[today] = nav
+        try:
+            tmp = path + ".tmp"
+            with open(tmp, "w") as f:
+                json.dump(hist, f, indent=1, sort_keys=True)
+            os.replace(tmp, path)
+        except OSError:
+            pass
+    intraday = None if (closed or not weekday) else nav
+    return hist, intraday
+
+
 def genesis_exodus_skill_adapter(cfg):
     state = os.path.expanduser(cfg["state_dir"])
     journal = _read_jsonl(os.path.join(state, "journal.jsonl"))
@@ -225,6 +279,11 @@ def genesis_exodus_skill_adapter(cfg):
             day = str(ts)[:10]
             if len(day) == 10 and day not in nav_series:
                 daily_nav[day] = v
+    # Monitor-recorded marked NAVs WIN over journaled ones: a journal entry is the
+    # value at the moment that run happened, while these are consistent end-of-day
+    # marks. Without this the curve only moves on days a strategy happened to run.
+    monitor_nav_hist, intraday_nav = _record_nav(state, nav, mark_to_market.get("applied"))
+    daily_nav.update(monitor_nav_hist)
     curve = [
         {"date": d, "nav": v, "deposit": dep_by_date.get(d, 0)}
         for d, v in sorted(daily_nav.items())
@@ -366,6 +425,8 @@ def genesis_exodus_skill_adapter(cfg):
             "halt_reason": control.get("halt_reason"),
         },
         "mark_to_market": mark_to_market,
+        "intraday_nav": intraday_nav,
+        "nav_history_days": len(monitor_nav_hist),
         "heartbeat": {
             "last_ts": _entry_ts(last) if last else None,
             "age_min": age_min,

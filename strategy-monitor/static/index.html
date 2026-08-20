@@ -130,6 +130,22 @@ function mtmBadge(s) {
   return ` <span class="badge mtm" title="Position prices re-quoted live by the monitor (${m.repriced}/${m.of} symbols); NAV = cash + market value">live px ${t}</span>`;
 }
 
+// Mid-session, today's NAV is live but NOT yet written to history (a partial day
+// would make the daily change jitter on every refresh). Show it as an explicit
+// intraday figure against the last settled close instead of silently folding it in.
+function intradayNote(s) {
+  const iv = s.intraday_nav, p = s.performance || {};
+  if (iv == null || !s.equity_curve || !s.equity_curve.length) return "";
+  const lastClose = s.equity_curve[s.equity_curve.length - 1].nav;
+  if (lastClose == null) return "";
+  const chg = iv - lastClose;
+  const pct = lastClose ? (chg / lastClose * 100) : null;
+  const txt = dailyMode === "pct" ? sign(pct) + "%"
+            : dailyMode === "both" ? `${fmt$(chg)} (${sign(pct)}%)`
+            : fmt$(chg);
+  return `<div class="hint ${cls(chg)}">intraday ${txt} · vs last close</div>`;
+}
+
 function dailyValue(p) {
   if (p.daily_pl == null) return "—";
   const d = fmt$(p.daily_pl), pc = (p.daily_pct != null ? sign(p.daily_pct) + "%" : "—");
@@ -251,7 +267,7 @@ function render(data) {
           <div class="hint">cash ${fmt$(s.cash)}</div></div>
         <div class="kpi"><div class="label">Daily P/L${perf.daily_to ? " (" + perf.daily_to + ")" : ""}</div>
           <div class="value ${cls(perf.daily_pl)}">${dailyValue(perf)}</div>
-          <div class="hint">${dailyHint(perf)}</div></div>
+          <div class="hint">${dailyHint(perf)}</div>${intradayNote(s)}</div>
         <div class="kpi"><div class="label">Campaign P/L${perf.campaign_since ? " (since " + perf.campaign_since + ")" : ""}</div>
           <div class="value ${cls(perf.campaign_pl)}">${fmt$(perf.campaign_pl)}</div>
           <div class="hint ${cls(perf.campaign_pct)}">${perf.campaign_pct != null ? sign(perf.campaign_pct) + "%" : ""}</div></div>
