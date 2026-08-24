@@ -35,7 +35,7 @@ import fmp  # noqa: E402  (reuse key + cache + _get)
 
 UNIVERSE_LIMIT = 120
 HISTORY_BARS = 1400          # ~5.5 years
-MAX_POSITIONS = 10   # raised 8->10 on 2026-07-27 with the ~$1k account (backtest-checked)
+MAX_POSITIONS = 11   # 8->10 2026-07-27, 10->11 2026-08-23 (idle cash, not a return edge)
 MAX_BUYS_PER_DAY = 3
 RISK_PCT = 0.02              # 2% of equity to stop
 

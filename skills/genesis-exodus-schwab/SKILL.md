@@ -133,9 +133,14 @@ within ~1 stop-distance of major overhead resistance, or a blow-off move too ext
 or when no sane stop (<=10%, at/below structure) exists. State the reasoning in the report.
 
 SIZING: lesser of $100 and 33% of equity (policy C). WHOLE-SHARES-ONLY, >=2 shares.
-CAPS: <=3 new buys/day, <=$100/name, <=33%/name, <=3/sector, 3–10 positions. No margin, no unsettled cash.
+CAPS: <=3 new buys/day, <=$100/name, <=33%/name, <=3/sector, 3–11 positions. No margin, no unsettled cash.
 (Position cap raised 8->10 on 2026-07-27 after the ~$1,000 top-up; backtest-checked at $1k:
-10 slots 22.8% CAGR / -14.1% maxDD vs 8 slots 21.0% / -12.4% — comparable, more diversification.)
+10 slots 22.8% CAGR / -14.1% maxDD vs 8 slots 21.0% / -12.4% — comparable, more diversification.
+Raised 10->11 on 2026-08-23: scans were stopping on "position cap reached (10/10)" with
+$156.60 sitting idle — enough for a full $100 position. Backtest at $1,020 shows the cap is
+NOT the driver: 10 slots 22.3% CAGR / -13.8% maxDD, 11 slots 22.1% / -14.4%, 12 slots 23.2% /
+-14.6% — all within noise. The 11th slot is justified by putting idle cash to work, not by an
+expected return edge; do not read the flat backtest as a reason to keep raising it.)
 HARD SCOPE — NEVER without explicit manual approval: options, shorting, margin, leveraged ETFs, crypto,
 futures, penny stocks (<$5), low-volume pumps, biotech binary gambles, averaging down, after-hours.
 ADVISORY SENSORS (fmp.py rs/rotation/correlation/breadth/news) inform but never decide.
