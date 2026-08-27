@@ -193,9 +193,23 @@ def snapshot():
                 break
         age_min = ((dt.datetime.now(dt.timezone.utc) - newest.astimezone(dt.timezone.utc))
                    .total_seconds() / 60) if newest else None
+        # A run that journaled an UNPARSEABLE ts (e.g. an unexpanded "$TS" shell var,
+        # seen 2026-08-27) is a DATA bug, not a stall: the scheduler fired and the
+        # entry exists. Count trailing unparseable entries and, if the newest rows
+        # are simply malformed, report a distinct condition instead of crying stall.
+        bad_tail = 0
+        for j in reversed(journal):
+            if parse_entry_dt(j) is None:
+                bad_tail += 1
+            else:
+                break
         stale = bool(market_hours and (age_min is None or age_min > 25))
+        if stale and bad_tail:
+            # newest rows unparseable -> the run happened; suppress the stall alert
+            stale = False
         sched_health = {"checked": True, "market_hours": market_hours,
                         "last_run_age_min": round(age_min) if age_min is not None else None,
+                        "unparseable_tail_entries": bad_tail or None,
                         "stale": stale}
         global _stale_notified
         # latch FIRST — a notification failure must never cause a re-notify storm.
