@@ -226,8 +226,15 @@ def genesis_exodus_skill_adapter(cfg):
         if nav is None:
             nav = _num(entry.get("nav")) or _num(entry.get("liquidationValue")) or _num(entry.get("portfolio_value"))
             cash = _num(entry.get("cash")) or _num(entry.get("cash_available")) or _num(entry.get("cashAvailableForTrading"))
+        # Position rows must be OBJECTS. The scan prompt briefly journaled a bare
+        # symbol list (["KVUE","KEY",...]); that yields shares=0 for every row, so
+        # shares*price is 0 and NAV collapses to cash alone (seen 2026-09-02:
+        # dashboard showed $90.98 against a real $994.19). Skip malformed entries
+        # and keep looking back for a well-formed one rather than trusting them.
         if not positions and isinstance(entry.get("positions"), list) and entry["positions"] and isinstance(entry["positions"][0], dict):
-            positions = _norm_positions(entry["positions"])
+            cand = _norm_positions(entry["positions"])
+            if any(_num(p.get("shares")) for p in cand):
+                positions = cand
         if regime is None:
             regime = entry.get("regime")
         if nav is not None and positions and regime is not None:
@@ -257,8 +264,12 @@ def genesis_exodus_skill_adapter(cfg):
                     mkt_val += p["price"] * p["shares"]
             # Rebuild NAV only if we have a cash figure; otherwise NAV would drop
             # the uninvested balance and understate the account.
-            if cash is not None and repriced:
+            # Guard: if every row has shares=0 the market value is 0 and rebuilding
+            # NAV would report just the cash balance as the whole account.
+            if cash is not None and repriced and mkt_val > 0:
                 nav = round(mkt_val + cash, 2)
+            elif positions and mkt_val <= 0:
+                mark_to_market["nav_rebuild_skipped"] = "zero market value — position shares missing"
             mark_to_market = {"applied": bool(repriced), "repriced": repriced,
                               "of": len(positions),
                               "at": dt.datetime.now().astimezone().isoformat(timespec="seconds")}
