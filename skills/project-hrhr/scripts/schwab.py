@@ -424,7 +424,7 @@ def _is_err(x):
 # straight from /accounts after the re-auth that added it to the OAuth grant — not
 # transcribed by hand. Genesis is …3393 and Babel is …5301; all three are linked to
 # the same app, which is exactly why this pin exists.
-HRHR_ACCOUNT = "<UNASSIGNED>"
+HRHR_ACCOUNT = "27452519"
 
 
 def _account_hash():
