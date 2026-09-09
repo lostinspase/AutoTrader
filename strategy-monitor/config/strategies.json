@@ -84,6 +84,17 @@
     "nav": 1000.0
    },
    "notes": "LIVE 2026-08-05. Gated 3x leveraged rotation (v2: weekly ladder + daily breaker), Schwab 20425301. Scheduler gate passed 2026-08-04 (5-day avg 92.2%, no zero days). ~50% drawdown is pre-accepted by design \u2014 do NOT halt on drawdown alone. Daily heartbeat cadence (breaker runs every market day)."
+  },
+  {
+   "id": "project-hrhr",
+   "name": "Project HRHR (speculative basket)",
+   "broker": "Charles Schwab",
+   "adapter": "genesis_exodus_skill",
+   "state_dir": "~/.claude/skills/project-hrhr/state",
+   "stale_min": 5760,
+   "deposits": [],
+   "trading_baseline": null,
+   "notes": "BUILT 2026-09-09, HALTED pending the \u2026519 account entering the OAuth grant. HUMAN-DIRECTED: no autonomous buy/sell engine \u2014 every trade is decided in discussion and placed in-session on an explicit go. Cron only reviews and alerts (10:20 + 15:50 ET). Two-stage plan: stage 1 ~$593 (NVDA/VST/IREN x2/MP/RKLB), stage 2 ~$381 CONDITIONAL after the 2026-09-16 Fed decision (VST/POWL/IREN). $1,000 firm budget, 3-5y horizon, NO automatic stops by design \u2014 25% drawdown, doubling and >35% concentration are REVIEW triggers, not sales."
   }
  ]
 }

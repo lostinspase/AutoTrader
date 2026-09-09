@@ -34,6 +34,12 @@ CLAUDE=/home/jploude/.local/bin/claude
 # A missed run is Babel's core tail risk; the watchdog must stay green.
 50 9 * * 1-5      cat $REPO/deploy/tasks/babel-daily-breaker.md | $CLAUDE -p        >> /home/jploude/autotrader-logs/babel.log 2>&1
 
+# Project HRHR review — 10:20a + 3:50p ET Mon–Fri. Deterministic, NO LLM, NEVER trades:
+# marks the speculative basket to market, journals, fires review alerts (25% drawdown,
+# doubling, >35% concentration) and the one-time stage-2 reminder after the 9/16 Fed.
+20 10 * * 1-5     python3 $REPO/skills/project-hrhr/scripts/hrhr.py review >> /home/jploude/autotrader-logs/hrhr.log 2>&1
+50 15 * * 1-5     python3 $REPO/skills/project-hrhr/scripts/hrhr.py review >> /home/jploude/autotrader-logs/hrhr.log 2>&1
+
 # Schwab token watchdog — daily 7:00 ET (narrative summary in the log)
 0 7 * * *         cat $REPO/deploy/tasks/schwab-token-watchdog.md | $CLAUDE -p      >> /home/jploude/autotrader-logs/watchdog.log 2>&1
 
