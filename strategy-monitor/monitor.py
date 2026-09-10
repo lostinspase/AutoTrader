@@ -222,6 +222,7 @@ def genesis_exodus_skill_adapter(cfg):
 
     # --- latest snapshot with positions/NAV --------------------------------
     positions, nav, cash, regime = [], None, None, None
+    entry_nav_for_mtm = None
     for entry in reversed(journal):
         if nav is None:
             nav = _num(entry.get("nav")) or _num(entry.get("liquidationValue")) or _num(entry.get("portfolio_value"))
@@ -235,6 +236,8 @@ def genesis_exodus_skill_adapter(cfg):
             cand = _norm_positions(entry["positions"])
             if any(_num(p.get("shares")) for p in cand):
                 positions = cand
+                entry_nav_for_mtm = (entry.get("nav") or entry.get("liquidationValue")
+                                     or entry.get("portfolio_value"))
         if regime is None:
             regime = entry.get("regime")
         if nav is not None and positions and regime is not None:
@@ -264,10 +267,28 @@ def genesis_exodus_skill_adapter(cfg):
                     mkt_val += p["price"] * p["shares"]
             # Rebuild NAV only if we have a cash figure; otherwise NAV would drop
             # the uninvested balance and understate the account.
-            # Guard: if every row has shares=0 the market value is 0 and rebuilding
-            # NAV would report just the cash balance as the whole account.
-            if cash is not None and repriced and mkt_val > 0:
+            # Preferred rebuild: ADJUST the journaled NAV by the price change since it
+            # was journaled. cash + market value is wrong whenever the journal's "cash"
+            # is SETTLED cash (Genesis journals cashAvailableForTrading): unsettled sale
+            # proceeds vanish and NAV drops by the sale amount (seen 2026-09-10: F stop
+            # freed ~$79 unsettled, dashboard read $900 against a real $979).
+            j_nav = _num(entry_nav_for_mtm)
+            delta = 0.0
+            all_priced = True
+            for p in positions:
+                jp = _num(p.get("journaled_price"))
+                if p.get("live") and jp and p.get("shares"):
+                    delta += (p["price"] - jp) * p["shares"]
+                elif p.get("live"):
+                    all_priced = False
+            if j_nav and all_priced and repriced:
+                nav = round(j_nav + delta, 2)
+                mark_to_market["nav_method"] = "journaled_nav + price_delta"
+            elif cash is not None and repriced and mkt_val > 0:
+                # Fallback (journaled prices missing): cash + market value. Can undercount
+                # by unsettled proceeds; flagged so the reader knows.
                 nav = round(mkt_val + cash, 2)
+                mark_to_market["nav_method"] = "cash + market_value (may exclude unsettled cash)"
             elif positions and mkt_val <= 0:
                 mark_to_market["nav_rebuild_skipped"] = "zero market value — position shares missing"
             mark_to_market = {"applied": bool(repriced), "repriced": repriced,

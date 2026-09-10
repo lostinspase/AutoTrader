@@ -87,7 +87,7 @@
   },
   {
    "id": "project-hrhr",
-   "name": "Project HRHR (speculative basket)",
+   "name": "HRHR \u2014 High Risk High Reward (Schwab)",
    "broker": "Charles Schwab",
    "adapter": "genesis_exodus_skill",
    "state_dir": "~/.claude/skills/project-hrhr/state",
