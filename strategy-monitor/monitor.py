@@ -72,7 +72,8 @@ def _norm_positions(raw):
             continue
         shares = p.get("shares") or p.get("qty") or 0
         avg = p.get("avg") or p.get("avg_price") or 0
-        price = p.get("price") or p.get("mark") or 0
+        # Genesis quick-checks journal the mark as "last"; Ark/ARK2/HRHR use "price".
+        price = p.get("price") or p.get("mark") or p.get("last") or 0
         pl = round((price - avg) * shares, 2) if avg and price else None
         out.append({
             "symbol": sym,
@@ -291,9 +292,10 @@ def genesis_exodus_skill_adapter(cfg):
                 mark_to_market["nav_method"] = "cash + market_value (may exclude unsettled cash)"
             elif positions and mkt_val <= 0:
                 mark_to_market["nav_rebuild_skipped"] = "zero market value — position shares missing"
-            mark_to_market = {"applied": bool(repriced), "repriced": repriced,
-                              "of": len(positions),
-                              "at": dt.datetime.now().astimezone().isoformat(timespec="seconds")}
+            # update, don't replace — nav_method / nav_rebuild_skipped were set above
+            mark_to_market.update({"applied": bool(repriced), "repriced": repriced,
+                                   "of": len(positions),
+                                   "at": dt.datetime.now().astimezone().isoformat(timespec="seconds")})
 
     # --- equity curve, deposit-aware ---------------------------------------
     deposits = cfg.get("deposits", [])
