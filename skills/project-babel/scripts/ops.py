@@ -121,7 +121,11 @@ def _consecutive_loss_halt():
     # exit mechanism, and must never trip the loss breaker (hardened 2026-07-30
     # after the first profitable stop-out raised the question).
     stops = [r for r in window
-             if r.get("outcome") == "stop" and float(r.get("realized_pl") or 0) < 0]
+             # A losing exit recorded as "loss" is counted too: on 2026-09-04 the agent had
+             # ledgered two stop-outs as outcome="loss", this counter read 0, and the breaker
+             # only engaged because the scan applied the SKILL rule by hand. Code must agree
+             # with the rule. Profitable stops (LTH 7/30) still do not count.
+             if r.get("outcome") in ("stop", "loss") and float(r.get("realized_pl") or 0) < 0]
     n_stops = len(stops)
     if n_stops < CONSEC_LOSS_TRIGGER:
         return False, n_stops

@@ -134,6 +134,10 @@ or when no sane stop (<=10%, at/below structure) exists. State the reasoning in 
 
 SIZING: lesser of $100 and 33% of equity (policy C). WHOLE-SHARES-ONLY, >=2 shares.
 CAPS: <=3 new buys/day, <=$100/name, <=33%/name, <=3/sector, 3–11 positions. No margin, no unsettled cash.
+REGIME GATE (2026-09-10): NEW positions only in a NORMAL regime. In CAUTIOUS (or worse) manage
+existing holdings only — no discovery, no new buys. Rationale: MNST was bought 8/24 into a cautious
+tape and stopped out -9.84; LTH and F followed. Three rule-conform losing stops in 8 sessions is the
+strategy fighting chop; the fix is not to fight it.
 (Position cap raised 8->10 on 2026-07-27 after the ~$1,000 top-up; backtest-checked at $1k:
 10 slots 22.8% CAGR / -14.1% maxDD vs 8 slots 21.0% / -12.4% — comparable, more diversification.
 Raised 10->11 on 2026-08-23: scans were stopping on "position cap reached (10/10)" with
